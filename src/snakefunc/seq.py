@@ -5,8 +5,13 @@ class Seq[T]:
     def __init__(self, sequence=None):
         self.value: Sequence[T] = sequence
 
-
-    def reduce[TAccumulated](self, callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated] | Callable[[TAccumulated, T, int], TAccumulated] | Callable[[TAccumulated, T], TAccumulated], initial_value: TAccumulated = None):
+    def reduce[TAccumulated](
+        self,
+        callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated]
+        | Callable[[TAccumulated, T, int], TAccumulated]
+        | Callable[[TAccumulated, T], TAccumulated],
+        initial_value: TAccumulated = None,
+    ):
         accumulator = initial_value
         callback_args = callback.__code__.co_varnames
 
@@ -24,7 +29,6 @@ class Seq[T]:
                 raise TypeError
 
         return accumulator
-
 
     def to_list(self):
         return list(self.value)
