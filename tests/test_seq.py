@@ -1,4 +1,4 @@
-from expects import equal, expect
+from expects import equal, expect, be_none
 
 from snakefunc import seq
 
@@ -11,6 +11,16 @@ def test_find_using_a_lambda_with_a_list_of_dicts() -> None:
     result = seq(objects).find(lambda obj: obj["name"] == "foo")
 
     expect(result).to(equal({"id": 1, "name": "foo"}))
+
+
+def test_find_using_a_lambda_looking_for_an_object_that_does_not_exist() -> None:
+    objects = [
+        {"id": 1, "name": "foo"},
+        {"id": 2, "name": "bar"},
+    ]
+    result = seq(objects).find(lambda obj: obj["name"] == "baz")
+
+    expect(result).to(be_none)
 
 
 def test_find_using_a_fn_with_a_list_of_dicts() -> None:
@@ -27,7 +37,7 @@ def test_find_using_a_fn_with_a_list_of_dicts() -> None:
     expect(result).to(equal({"id": 1, "name": "foo"}))
 
 
-def test_seq_reduce_using_a_lambda_with_two_args():
+def test_seq_reduce_using_a_lambda_with_two_args() -> None:
     result = seq([1, 1, 1, 1, 1]).reduce(
         lambda accumulator, value: accumulator + value, 10
     )
@@ -35,7 +45,7 @@ def test_seq_reduce_using_a_lambda_with_two_args():
     expect(result).to(equal(15))
 
 
-def test_seq_reduce_using_a_lambda_with_three_args():
+def test_seq_reduce_using_a_lambda_with_three_args() -> None:
     result = seq([1, 1, 1, 1, 1]).reduce(
         lambda accumulator, value, index: accumulator + value + index, 10
     )
@@ -43,7 +53,7 @@ def test_seq_reduce_using_a_lambda_with_three_args():
     expect(result).to(equal(25))
 
 
-def test_seq_reduce_using_a_lambda_with_four_args():
+def test_seq_reduce_using_a_lambda_with_four_args() -> None:
     result = seq([1, 1, 1, 1, 1]).reduce(
         lambda accumulator, value, index, sequence: accumulator
         + value

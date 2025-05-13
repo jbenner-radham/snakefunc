@@ -5,7 +5,7 @@ class Seq[T]:
     def __init__(self, sequence=None):
         self.value: Sequence[T] = sequence
 
-    def find(self, callback: Callable[[T], bool]) -> T:
+    def find(self, callback: Callable[[T], bool]) -> T | None:
         for value in self.value:
             if callback(value) is True:
                 return value
@@ -17,10 +17,10 @@ class Seq[T]:
         callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated]
         | Callable[[TAccumulated, T, int], TAccumulated]
         | Callable[[TAccumulated, T], TAccumulated],
-        initial_value: TAccumulated = None,
+        initial_value: TAccumulated,
     ) -> TAccumulated:
-        accumulator = initial_value
-        callback_args = callback.__code__.co_varnames
+        accumulator: TAccumulated = initial_value
+        callback_args: tuple[str, ...] = callback.__code__.co_varnames
 
         match len(callback_args):
             case 4:
@@ -42,4 +42,4 @@ class Seq[T]:
 
 
 def seq[T](sequence: Sequence[T]) -> Seq[T]:
-    return Seq[T](sequence)
+    return Seq(sequence)
