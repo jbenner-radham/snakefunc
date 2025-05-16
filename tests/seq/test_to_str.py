@@ -1,0 +1,27 @@
+from expects import expect, equal
+
+from snakefunc import seq
+
+
+def test_to_str_with_an_empty_list_and_no_separator() -> None:
+    result = seq([]).to_str()
+
+    expect(result).to(equal(""))
+
+
+def test_to_str_with_an_empty_list_and_a_separator() -> None:
+    result = seq([]).to_str(separator=";")
+
+    expect(result).to(equal(""))
+
+
+def test_to_str_with_a_list_of_ints_and_no_separator() -> None:
+    result = seq([8, 6, 7, 5, 3, 0, 9]).to_str()
+
+    expect(result).to(equal("8675309"))
+
+
+def test_to_str_with_a_list_of_ints_and_na_separator() -> None:
+    result = seq([8, 6, 7, 5, 3, 0, 9]).to_str(separator=":")
+
+    expect(result).to(equal("8:6:7:5:3:0:9"))

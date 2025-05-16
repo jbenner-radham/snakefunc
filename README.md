@@ -73,3 +73,19 @@ Returns the sequence as a list.
 # Returns the value `[5, 3, 0, 9]`.
 seq([5, 3, 0, 9]).to_list()
 ```
+
+### `.to_str()`
+
+Returns the sequence as a str.
+
+```python
+# Returns the value `"8675309"`.
+seq([8, 6, 7, 5, 3, 0, 9]).to_str()
+```
+
+Optionally, a separator may be specified.
+
+```python
+# Returns the value `"85.5.14"`.
+seq([85, 5, 14]).to_str(separator=".")
+```
