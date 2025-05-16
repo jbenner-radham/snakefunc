@@ -1,5 +1,5 @@
 from collections.abc import Sequence, Callable
-from typing import overload
+from typing import overload, cast, Any
 
 
 class Seq[T]:
@@ -12,6 +12,15 @@ class Seq[T]:
                 return value
 
         return None
+
+    def first(self) -> T | None:
+        return self._value[0] if len(self._value) > 0 else None
+
+    def last(self) -> T | None:
+        return self._value[-1] if len(self._value) > 0 else None
+
+    def len(self) -> int:
+        return len(self._value)
 
     @overload
     def reduce[TAccumulated](
@@ -57,7 +66,7 @@ class Seq[T]:
         initial_value: TAccumulated = None,
     ) -> TAccumulated | None:
         accumulator: TAccumulated = initial_value
-        callback_args: tuple[str, ...] = callback.__code__.co_varnames
+        callback_args: tuple[str, ...] = cast(Any, callback).__code__.co_varnames
 
         if accumulator is None and len(self._value) > 0:
             match self._value[0]:
