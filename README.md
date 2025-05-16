@@ -44,7 +44,7 @@ Returns the last item in the sequence, or `None` if the sequence is empty.
 
 ```python
 # Returns the int 3.
-seq([1, 2, 3]).first()
+seq([1, 2, 3]).last()
 ```
 
 ### `.len()`
