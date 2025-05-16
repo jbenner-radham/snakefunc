@@ -103,7 +103,7 @@ class Seq[T]:
             else separator.join(map(str, self.to_list()))
         )
 
-    def to_list(self):
+    def to_list(self) -> list[T]:
         return list(self._value)
 
 
