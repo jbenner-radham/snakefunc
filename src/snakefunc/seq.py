@@ -6,6 +6,44 @@ class Seq[T]:
     def __init__(self, sequence=None) -> None:
         self._value: Sequence[T] = sequence
 
+    @overload
+    def filter(self, callback: Callable[[T], bool]) -> Self: ...
+
+    @overload
+    def filter(self, callback: Callable[[T, int], bool]) -> Self: ...
+
+    @overload
+    def filter(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
+
+    def filter(
+        self,
+        callback: Callable[[T], bool]
+        | Callable[[T, int], bool]
+        | Callable[[T, int, Sequence[T]], bool],
+    ) -> Self:
+        callback_args: tuple[str, ...] = callback.__code__.co_varnames
+        filtered: list[T] = []
+
+        match len(callback_args):
+            case 3:
+                for index, value in enumerate(self._value):
+                    if callback(value, index, self._value) is True:
+                        filtered.append(value)
+            case 2:
+                for index, value in enumerate(self._value):
+                    if callback(value, index) is True:
+                        filtered.append(value)
+            case 1:
+                for value in self._value:
+                    if callback(value) is True:
+                        filtered.append(value)
+            case _:
+                raise TypeError
+
+        self._value = filtered
+
+        return self
+
     def find(self, callback: Callable[[T], bool]) -> T | None:
         for value in self._value:
             if callback(value) is True:
