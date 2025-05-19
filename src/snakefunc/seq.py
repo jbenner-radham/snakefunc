@@ -1,5 +1,5 @@
 from collections.abc import Sequence, Callable
-from typing import overload, cast, Any
+from typing import overload, cast, Any, Self
 
 
 class Seq[T]:
@@ -21,6 +21,43 @@ class Seq[T]:
 
     def len(self) -> int:
         return len(self._value)
+
+    @overload
+    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Self: ...
+
+    @overload
+    def map[TMapped](self, callback: Callable[[T, int], TMapped]) -> Self: ...
+
+    @overload
+    def map[TMapped](
+        self, callback: Callable[[T, int, Sequence[T]], TMapped]
+    ) -> Self: ...
+
+    def map[TMapped](
+        self,
+        callback: Callable[[T], TMapped]
+        | Callable[[T, int], TMapped]
+        | Callable[[T, int, Sequence[T]], TMapped],
+    ) -> Self:
+        callback_args: tuple[str, ...] = cast(Any, callback).__code__.co_varnames
+        sequence: list[T] = []
+
+        match len(callback_args):
+            case 3:
+                for index, value in enumerate(self._value):
+                    sequence.append(callback(value, index, self._value))
+            case 2:
+                for index, value in enumerate(self._value):
+                    sequence.append(callback(value, index))
+            case 1:
+                for value in self._value:
+                    sequence.append(callback(value))
+            case _:
+                raise TypeError
+
+        self._value = sequence
+
+        return self
 
     @overload
     def reduce[TAccumulated](
