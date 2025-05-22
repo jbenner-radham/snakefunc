@@ -35,7 +35,7 @@ class Seq[T]:
                 raise ValueError()
 
     def _get_sequence_type(self) -> SequenceType:
-        match self._value:
+        match self.value():
             case bytearray():
                 return "bytearray"
             case bytes():
@@ -50,6 +50,25 @@ class Seq[T]:
                 return "tuple"
             case _:
                 raise ValueError()
+
+    def _transform_list_into_sequence_type(self, value: list[T]) -> Sequence[T]:
+        match self._get_sequence_type():
+            case "bytearray":
+                return bytearray(value)
+            case "bytes":
+                return bytes(value)
+            case "list":
+                return value
+            case "range":
+                return self._coerce_range_value(value)
+            case "str":
+                return "".join(value)
+            case "tuple":
+                return tuple(value)
+            case _:
+                raise TypeError(
+                    f'Cannot transform list. Non-sequence type of "{self._get_sequence_type()}" specified.'
+                )
 
     @overload
     def filter(self, callback: Callable[[T], bool]) -> Self: ...
@@ -89,19 +108,7 @@ class Seq[T]:
             case _:
                 raise TypeError
 
-        match sequence_type:
-            case "bytearray":
-                self._value = bytearray(filtered)
-            case "bytes":
-                self._value = bytes(filtered)
-            case "list":
-                self._value = filtered
-            case "range":
-                self._value = self._coerce_range_value(filtered)
-            case "str":
-                self._value = "".join(filtered)
-            case "tuple":
-                self._value = tuple(filtered)
+        self._value = self._transform_list_into_sequence_type(filtered)
 
         return self
 
@@ -139,22 +146,22 @@ class Seq[T]:
         | Callable[[T, int, Sequence[T]], TMapped],
     ) -> Self:
         callback_args: tuple[str, ...] = cast(Any, callback).__code__.co_varnames
-        sequence: list[T] = []
+        mapped: list[T] = []
 
         match len(callback_args):
             case 3:
                 for index, value in enumerate(self._value):
-                    sequence.append(callback(value, index, self._value))
+                    mapped.append(callback(value, index, self._value))
             case 2:
                 for index, value in enumerate(self._value):
-                    sequence.append(callback(value, index))
+                    mapped.append(callback(value, index))
             case 1:
                 for value in self._value:
-                    sequence.append(callback(value))
+                    mapped.append(callback(value))
             case _:
                 raise TypeError
 
-        self._value = sequence
+        self._value = self._transform_list_into_sequence_type(mapped)
 
         return self
 
@@ -204,8 +211,8 @@ class Seq[T]:
         accumulator: TAccumulated = initial_value
         callback_args: tuple[str, ...] = cast(Any, callback).__code__.co_varnames
 
-        if accumulator is None and len(self._value) > 0:
-            match self._value[0]:
+        if accumulator is None and self.len() > 0:
+            match self.first():
                 case bytes():
                     accumulator = b""
                 case float():
@@ -240,7 +247,7 @@ class Seq[T]:
         )
 
     def to_list(self) -> list[T]:
-        return list(self._value)
+        return list(self.value())
 
     def value(self) -> Sequence[T]:
         return self._value
