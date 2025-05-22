@@ -1,5 +1,5 @@
-from collections.abc import Sequence, Callable
-from typing import overload, cast, Any, Self, Literal
+from collections.abc import Callable, Sequence
+from typing import Any, Literal, Self, cast, overload
 
 type RangeType = Literal["range"]
 type AcceptableSequenceType = Literal["bytearray", "bytes", "list", "str", "tuple"]

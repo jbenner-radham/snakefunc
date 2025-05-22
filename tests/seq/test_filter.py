@@ -1,4 +1,4 @@
-from expects import expect, be_a, equal
+from expects import be_a, equal, expect
 
 from snakefunc import seq
 from snakefunc.seq import Seq
