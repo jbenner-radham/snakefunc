@@ -30,7 +30,7 @@ class Seq[T]:
 
         if not coerce_range_into in coercible_sequence_types:
             raise TypeError(
-                'The provided "coerce_range_into" argument must be a "str" with a value of "bytearray", "bytes", "list", "str", or "tuple".'
+                'The provided "coerce_range_into" argument must be of type "CoercibleSequenceType" which is a "str" with a value of "bytearray", "bytes", "list", "str", or "tuple".'
             )
 
         self._value: Sequence[T] = sequence
