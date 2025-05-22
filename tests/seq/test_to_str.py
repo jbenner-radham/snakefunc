@@ -21,7 +21,7 @@ def test_to_str_with_a_list_of_ints_and_no_separator() -> None:
     expect(result).to(equal("8675309"))
 
 
-def test_to_str_with_a_list_of_ints_and_na_separator() -> None:
+def test_to_str_with_a_list_of_ints_and_a_separator() -> None:
     result = seq([8, 6, 7, 5, 3, 0, 9]).to_str(separator=":")
 
     expect(result).to(equal("8:6:7:5:3:0:9"))
