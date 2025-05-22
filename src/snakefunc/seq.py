@@ -292,6 +292,9 @@ class Seq[T]:
     def to_list(self) -> list[T]:
         return list(self.value())
 
+    def to_tuple(self) -> tuple[T, ...]:
+        return tuple(self.value())
+
     def value(self) -> Sequence[T]:
         return self._value
 
