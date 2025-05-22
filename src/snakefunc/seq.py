@@ -93,6 +93,13 @@ class Seq[T]:
                     f'Cannot transform list. Non-sequence type of "{self._get_sequence_type()}" specified.'
                 )
 
+    def all(self, callback: Callable[[T], bool]) -> bool:
+        for value in self.value():
+            if not callback(value):
+                return False
+
+        return True
+
     @overload
     def filter(self, callback: Callable[[T], bool]) -> Self: ...
 
