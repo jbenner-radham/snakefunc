@@ -13,6 +13,10 @@ class Seq[T]:
         self._value: Sequence[T] = sequence
         self._coerce_range_into: AcceptableSequenceType = coerce_range_into
 
+    @classmethod
+    def __call__(cls, *args, **kwargs) -> Self:
+        return cls(*args, **kwargs)
+
     def _coerce_range_value(
         self, value: Sequence[T]
     ) -> bytearray | bytes | list[T] | str | tuple[T, ...]:
@@ -239,7 +243,4 @@ class Seq[T]:
         return list(self._value)
 
 
-def seq[T](
-    sequence: Sequence[T], coerce_range_into: AcceptableSequenceType = "tuple"
-) -> Seq[T]:
-    return Seq(sequence, coerce_range_into)
+seq = Seq
