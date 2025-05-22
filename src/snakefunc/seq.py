@@ -94,6 +94,9 @@ class Seq[T]:
                 )
 
     def all(self, callback: Callable[[T], bool]) -> bool:
+        """
+        TODO: Make and handle overloads.
+        """
         for value in self.value():
             if not callback(value):
                 return False
