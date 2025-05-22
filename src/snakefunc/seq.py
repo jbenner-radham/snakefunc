@@ -2,16 +2,16 @@ from collections.abc import Callable, Sequence
 from typing import Any, Literal, Self, cast, overload
 
 type RangeType = Literal["range"]
-type AcceptableSequenceType = Literal["bytearray", "bytes", "list", "str", "tuple"]
-type SequenceType = AcceptableSequenceType | RangeType
+type CoercibleSequenceType = Literal["bytearray", "bytes", "list", "str", "tuple"]
+type SequenceType = CoercibleSequenceType | RangeType
 
 
 class Seq[T]:
     def __init__(
-        self, sequence: Sequence[T], coerce_range_into: AcceptableSequenceType = "tuple"
+        self, sequence: Sequence[T], coerce_range_into: CoercibleSequenceType = "tuple"
     ) -> None:
         self._value: Sequence[T] = sequence
-        self._coerce_range_into: AcceptableSequenceType = coerce_range_into
+        self._coerce_range_into: CoercibleSequenceType = coerce_range_into
 
     @classmethod
     def __call__(cls, *args, **kwargs) -> Self:
@@ -241,6 +241,9 @@ class Seq[T]:
 
     def to_list(self) -> list[T]:
         return list(self._value)
+
+    def value(self) -> Sequence[T]:
+        return self._value
 
 
 seq = Seq
