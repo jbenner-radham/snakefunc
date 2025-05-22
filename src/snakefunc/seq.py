@@ -10,6 +10,29 @@ class Seq[T]:
     def __init__(
         self, sequence: Sequence[T], coerce_range_into: CoercibleSequenceType = "tuple"
     ) -> None:
+        coercible_sequence_types: tuple[CoercibleSequenceType, ...] = (
+            "bytearray",
+            "bytes",
+            "list",
+            "str",
+            "tuple",
+        )
+
+        if not isinstance(sequence, Sequence):
+            raise TypeError(
+                'The provided "sequence" argument must be of type "Sequence".'
+            )
+
+        if not isinstance(coerce_range_into, str):
+            raise TypeError(
+                'The provided "coerce_range_into" argument must be of type "str".'
+            )
+
+        if not coerce_range_into in coercible_sequence_types:
+            raise TypeError(
+                'The provided "coerce_range_into" argument must be a "str" with a value of "bytearray", "bytes", "list", "str", or "tuple".'
+            )
+
         self._value: Sequence[T] = sequence
         self._coerce_range_into: CoercibleSequenceType = coerce_range_into
 
