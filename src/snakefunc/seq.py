@@ -136,20 +136,20 @@ class Seq[T]:
         return self
 
     def find(self, callback: Callable[[T], bool]) -> T | None:
-        for value in self._value:
+        for value in self.value():
             if callback(value) is True:
                 return value
 
         return None
 
     def first(self) -> T | None:
-        return self._value[0] if len(self._value) > 0 else None
+        return self._value[0] if self.len() > 0 else None
 
     def last(self) -> T | None:
-        return self._value[-1] if len(self._value) > 0 else None
+        return self._value[-1] if self.len() > 0 else None
 
     def len(self) -> int:
-        return len(self._value)
+        return len(self.value())
 
     @overload
     def map[TMapped](self, callback: Callable[[T], TMapped]) -> Self: ...
@@ -173,13 +173,13 @@ class Seq[T]:
 
         match len(callback_args):
             case 3:
-                for index, value in enumerate(self._value):
-                    mapped.append(callback(value, index, self._value))
+                for index, value in enumerate(self.value()):
+                    mapped.append(callback(value, index, self.value()))
             case 2:
-                for index, value in enumerate(self._value):
+                for index, value in enumerate(self.value()):
                     mapped.append(callback(value, index))
             case 1:
-                for value in self._value:
+                for value in self.value():
                     mapped.append(callback(value))
             case _:
                 raise TypeError
@@ -249,13 +249,13 @@ class Seq[T]:
 
         match len(callback_args):
             case 4:
-                for index, value in enumerate(self._value):
-                    accumulator = callback(accumulator, value, index, self._value)
+                for index, value in enumerate(self.value()):
+                    accumulator = callback(accumulator, value, index, self.value())
             case 3:
-                for index, value in enumerate(self._value):
+                for index, value in enumerate(self.value()):
                     accumulator = callback(accumulator, value, index)
             case 2:
-                for value in self._value:
+                for value in self.value():
                     accumulator = callback(accumulator, value)
             case _:
                 raise TypeError
