@@ -236,12 +236,22 @@ class Seq[T]:
 
         if accumulator is None and self.len() > 0:
             match self.first():
+                case bytearray():
+                    accumulator = bytearray()
                 case bytes():
                     accumulator = b""
+                case complex():
+                    accumulator = complex()
+                case dict():
+                    accumulator = {}
                 case float():
                     accumulator = 0.0
+                case frozenset():
+                    accumulator = frozenset()
                 case int():
                     accumulator = 0
+                case set():
+                    accumulator = set()
                 case str():
                     accumulator = ""
                 case _:
