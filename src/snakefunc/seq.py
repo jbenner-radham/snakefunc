@@ -183,7 +183,7 @@ class Seq[T]:
             args = [value, index, self.value()]
             fn = self._build_callback_partial(callback, args)
 
-            if fn() is True:
+            if fn():
                 filtered.append(value)
 
         self._value = self._transform_list_into_sequence_type(filtered)
