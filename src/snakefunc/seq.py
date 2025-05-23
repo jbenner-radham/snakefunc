@@ -319,6 +319,12 @@ class Seq[T]:
         return self.to_str().encode()
 
     def to_list(self) -> list[T]:
+        """
+        Get the value of the sequence as list.
+
+        :return: A list representation of the sequence.
+        :rtype: list[T]
+        """
         return list(self.value())
 
     def to_str(self, separator: str | None = None) -> str:

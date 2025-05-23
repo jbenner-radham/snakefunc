@@ -80,8 +80,9 @@ assert seq(["h", "e", "l", "l", "o", "!"]).to_bytes() == b"hello!"
 Returns the sequence as a list.
 
 ```python
-# Returns the value `[5, 3, 0, 9]`.
-seq([5, 3, 0, 9]).to_list()
+from snakefunc import seq
+
+assert seq((5, 3, 0, 9)).to_list() == [5, 3, 0, 9]
 ```
 
 ### `.to_str()`
