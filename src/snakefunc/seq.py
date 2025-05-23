@@ -42,9 +42,9 @@ class Seq[T]:
         return cls(*args, **kwargs)
 
     @staticmethod
-    def _build_callback_partial[TPartialReturn](
-        callback: Callable[[...], TPartialReturn], args: list[Any]
-    ) -> Callable[[], TPartialReturn]:
+    def _build_callback_partial(
+        callback: Callable[[Any, ...], Any], args: list[Any]
+    ) -> Callable[[], Any]:
         callback_args: tuple[str, ...] = callback.__code__.co_varnames
         callback_args_len = len(callback_args)
         max_args_len = len(args)
@@ -279,7 +279,6 @@ class Seq[T]:
         initial_value: TAccumulated = None,
     ) -> TAccumulated | None:
         accumulator: TAccumulated = initial_value
-        callback_args: tuple[str, ...] = cast(Any, callback).__code__.co_varnames
 
         if accumulator is None and self.len() > 0:
             match self.first():
@@ -304,18 +303,9 @@ class Seq[T]:
                 case _:
                     raise TypeError
 
-        match len(callback_args):
-            case 4:
-                for index, value in enumerate(self.value()):
-                    accumulator = callback(accumulator, value, index, self.value())
-            case 3:
-                for index, value in enumerate(self.value()):
-                    accumulator = callback(accumulator, value, index)
-            case 2:
-                for value in self.value():
-                    accumulator = callback(accumulator, value)
-            case _:
-                raise TypeError
+        for index, value in enumerate(self.value()):
+            args = [accumulator, value, index, self.value()]
+            accumulator = self._build_callback_partial(callback, args)()
 
         return accumulator
 
