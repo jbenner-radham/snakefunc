@@ -331,7 +331,7 @@ class Seq[T]:
         """
         Get the value of the sequence as a string. Optionally, joined together with a separator.
 
-        :param separator: If desired a separator to join the sequence together with. Defaults to `None`.
+        :param separator: If desired, a separator to join the sequence together with. Defaults to `None`.
         :type separator: str | None
         :return: A string representation of the sequence.
         :rtype: str
@@ -343,6 +343,12 @@ class Seq[T]:
         )
 
     def to_tuple(self) -> tuple[T, ...]:
+        """
+        Get the value of the sequence as a tuple.
+
+        :return: A tuple representation of the sequence.
+        :rtype: tuple[T, ...]
+        """
         return tuple(self.value())
 
     def value(self) -> Sequence[T]:

@@ -1,5 +1,6 @@
 snakefunc
 =========
+
 A work in progress functional programming library for Python. Inspired by [PyFunctional](https://pyfunctional.pedro.ai/) and [Laravel Collections](https://laravel.com/docs/master/collections).
 
 Usage
@@ -101,4 +102,14 @@ Optionally, joined together with a separator.
 from snakefunc import seq
 
 assert seq([85, 5, 14]).to_str(separator=".") == "85.5.14"
+```
+
+### `.to_tuple()`
+
+Get the value of the sequence as a tuple.
+
+```python
+from snakefunc import seq
+
+assert seq([1, 2, 3]).to_tuple() == (1, 2, 3)
 ```
