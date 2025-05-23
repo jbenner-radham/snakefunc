@@ -329,9 +329,9 @@ class Seq[T]:
 
     def to_str(self, separator: str | None = None) -> str:
         return (
-            "".join(map(str, self.to_list()))
+            "".join(map(str, self.value()))
             if separator is None
-            else separator.join(map(str, self.to_list()))
+            else separator.join(map(str, self.value()))
         )
 
     def to_tuple(self) -> tuple[T, ...]:
