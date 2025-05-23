@@ -38,6 +38,22 @@ def test_all_with_a_truthy_list() -> None:
     expect(result).to(be_true)
 
 
+def test_all_with_a_truthy_list_and_a_lambda_with_two_args() -> None:
+    value = ["hello", "world"]
+    result = seq(value).all(lambda word, index: word and index >= 0)
+
+    expect(result).to(be_true)
+
+
+def test_all_with_a_truthy_list_and_a_lambda_with_three_args() -> None:
+    value = ["hello", "world"]
+    result = seq(value).all(
+        lambda word, index, sequence: word and index >= 0 and index < len(sequence)
+    )
+
+    expect(result).to(be_true)
+
+
 def test_all_with_a_falsy_range() -> None:
     value = range(5)
     result = seq(value).all(lambda number: number)

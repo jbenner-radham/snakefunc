@@ -94,12 +94,44 @@ class Seq[T]:
                     f'Cannot transform list. Non-sequence type of "{self._get_sequence_type()}" specified.'
                 )
 
-    def all(self, callback: Callable[[T], bool]) -> bool:
-        """
-        TODO: Make and handle overloads.
-        """
-        for value in self.value():
-            if not callback(value):
+    @overload
+    def all(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
+
+    @overload
+    def all(self, callback: Callable[[T, int], bool]) -> Self: ...
+
+    @overload
+    def all(self, callback: Callable[[T], bool]) -> Self: ...
+
+    def all(
+        self,
+        callback: Callable[[T, int, Sequence[T]], bool]
+        | Callable[[T, int], bool]
+        | Callable[[T], bool],
+    ) -> bool:
+        callback_args: tuple[str, ...] = callback.__code__.co_varnames
+        fn: (
+            Callable[[T, int, Sequence[T]], bool]
+            | Callable[[T, int], bool]
+            | Callable[[T], bool]
+        )
+
+        for index, value in enumerate(self.value()):
+            args = [value, index, self.value()]
+
+            match len(callback_args):
+                case 3:
+                    fn = partial(callback, *args)
+                case 2:
+                    fn = partial(callback, *args[:2])
+                case 1:
+                    fn = partial(callback, *args[:1])
+                case _:
+                    raise TypeError(
+                        'The "callback" argument callable must have 1 to 3 arguments.'
+                    )
+
+            if not fn():
                 return False
 
         return True
