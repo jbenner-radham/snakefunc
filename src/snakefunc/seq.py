@@ -309,15 +309,24 @@ class Seq[T]:
 
         return accumulator
 
+    def to_bytes(self) -> bytes:
+        """
+        Get the value of the sequence as bytes.
+
+        :return: A bytes representation of the sequence.
+        :rtype: bytes
+        """
+        return self.to_str().encode()
+
+    def to_list(self) -> list[T]:
+        return list(self.value())
+
     def to_str(self, separator: str | None = None) -> str:
         return (
             "".join(map(str, self.to_list()))
             if separator is None
             else separator.join(map(str, self.to_list()))
         )
-
-    def to_list(self) -> list[T]:
-        return list(self.value())
 
     def to_tuple(self) -> tuple[T, ...]:
         return tuple(self.value())

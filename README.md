@@ -65,6 +65,16 @@ Returns the result of the sequence being reduced to a singular value.
 seq([8, 6, 7]).reduce(lambda accumulator, value: accumulator + value)
 ```
 
+### `.to_bytes()`
+
+Returns the sequence as bytes.
+
+```python
+from snakefunc import seq
+
+assert seq(["h", "e", "l", "l", "o", "!"]).to_bytes() == b"hello!"
+```
+
 ### `.to_list()`
 
 Returns the sequence as a list.
