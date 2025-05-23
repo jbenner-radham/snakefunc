@@ -41,6 +41,24 @@ class Seq[T]:
     def __call__(cls, *args, **kwargs) -> Self:
         return cls(*args, **kwargs)
 
+    @staticmethod
+    def _build_callback_partial(
+        callback: Callable[[...], Any], args: list[Any]
+    ) -> Callable[[], Any]:
+        callback_args: tuple[str, ...] = callback.__code__.co_varnames
+
+        match len(callback_args):
+            case 3:
+                return partial(callback, *args)
+            case 2:
+                return partial(callback, *args[:2])
+            case 1:
+                return partial(callback, *args[:1])
+            case _:
+                raise TypeError(
+                    'The "callback" argument callable must have 1 to 3 arguments.'
+                )
+
     def _coerce_range_value(
         self, value: Sequence[T]
     ) -> bytearray | bytes | list[T] | str | tuple[T, ...]:
@@ -109,27 +127,11 @@ class Seq[T]:
         | Callable[[T, int], bool]
         | Callable[[T], bool],
     ) -> bool:
-        callback_args: tuple[str, ...] = callback.__code__.co_varnames
-        fn: (
-            Callable[[T, int, Sequence[T]], bool]
-            | Callable[[T, int], bool]
-            | Callable[[T], bool]
-        )
+        fn: Callable[[], bool]
 
         for index, value in enumerate(self.value()):
             args = [value, index, self.value()]
-
-            match len(callback_args):
-                case 3:
-                    fn = partial(callback, *args)
-                case 2:
-                    fn = partial(callback, *args[:2])
-                case 1:
-                    fn = partial(callback, *args[:1])
-                case _:
-                    raise TypeError(
-                        'The "callback" argument callable must have 1 to 3 arguments.'
-                    )
+            fn = self._build_callback_partial(callback, args)
 
             if not fn():
                 return False
@@ -154,28 +156,11 @@ class Seq[T]:
         if self.len() == 0:
             return self
 
-        callback_args: tuple[str, ...] = callback.__code__.co_varnames
         filtered: list[T] = []
 
         for index, value in enumerate(self.value()):
             args = [value, index, self.value()]
-            fn: (
-                Callable[[T], bool]
-                | Callable[[T, int], bool]
-                | Callable[[T, int, Sequence[T]], bool]
-            )
-
-            match len(callback_args):
-                case 3:
-                    fn = partial(callback, *args)
-                case 2:
-                    fn = partial(callback, *args[:2])
-                case 1:
-                    fn = partial(callback, *args[:1])
-                case _:
-                    raise TypeError(
-                        'The "callback" argument callable must have 1 to 3 arguments.'
-                    )
+            fn: Callable[[], bool] = self._build_callback_partial(callback, args)
 
             if fn() is True:
                 filtered.append(value)
