@@ -1,4 +1,5 @@
 from collections.abc import Callable, Sequence
+from functools import partial
 from typing import Any, Literal, Self, cast, overload
 
 type RangeType = Literal["range"]
@@ -123,23 +124,29 @@ class Seq[T]:
 
         callback_args: tuple[str, ...] = callback.__code__.co_varnames
         filtered: list[T] = []
-        sequence_type: SequenceType = self._get_sequence_type()
 
-        match len(callback_args):
-            case 3:
-                for index, value in enumerate(self._value):
-                    if callback(value, index, self._value) is True:
-                        filtered.append(value)
-            case 2:
-                for index, value in enumerate(self._value):
-                    if callback(value, index) is True:
-                        filtered.append(value)
-            case 1:
-                for value in self._value:
-                    if callback(value) is True:
-                        filtered.append(value)
-            case _:
-                raise TypeError
+        for index, value in enumerate(self.value()):
+            args = [value, index, self.value()]
+            fn: (
+                Callable[[T], bool]
+                | Callable[[T, int], bool]
+                | Callable[[T, int, Sequence[T]], bool]
+            )
+
+            match len(callback_args):
+                case 3:
+                    fn = partial(callback, *args)
+                case 2:
+                    fn = partial(callback, *args[:2])
+                case 1:
+                    fn = partial(callback, *args[:1])
+                case _:
+                    raise TypeError(
+                        'The "callback" argument callable must have 1 to 3 arguments.'
+                    )
+
+            if fn() is True:
+                filtered.append(value)
 
         self._value = self._transform_list_into_sequence_type(filtered)
 
