@@ -42,9 +42,9 @@ class Seq[T]:
         return cls(*args, **kwargs)
 
     @staticmethod
-    def _build_callback_partial(
-        callback: Callable[[...], Any], args: list[Any]
-    ) -> Callable[[], Any]:
+    def _build_callback_partial[TPartialReturn](
+        callback: Callable[[...], TPartialReturn], args: list[Any]
+    ) -> Callable[[], TPartialReturn]:
         callback_args: tuple[str, ...] = callback.__code__.co_varnames
 
         match len(callback_args):
@@ -127,8 +127,6 @@ class Seq[T]:
         | Callable[[T, int], bool]
         | Callable[[T], bool],
     ) -> bool:
-        fn: Callable[[], bool]
-
         for index, value in enumerate(self.value()):
             args = [value, index, self.value()]
             fn = self._build_callback_partial(callback, args)
@@ -157,7 +155,7 @@ class Seq[T]:
             args = [value, index, self.value()]
             fn = self._build_callback_partial(callback, args)
 
-            if fn() is True:
+            if fn():
                 return True
 
         return False
@@ -184,7 +182,7 @@ class Seq[T]:
 
         for index, value in enumerate(self.value()):
             args = [value, index, self.value()]
-            fn: Callable[[], bool] = self._build_callback_partial(callback, args)
+            fn = self._build_callback_partial(callback, args)
 
             if fn() is True:
                 filtered.append(value)
@@ -195,16 +193,16 @@ class Seq[T]:
 
     def find(self, callback: Callable[[T], bool]) -> T | None:
         for value in self.value():
-            if callback(value) is True:
+            if callback(value):
                 return value
 
         return None
 
     def first(self) -> T | None:
-        return self._value[0] if self.len() > 0 else None
+        return self.value()[0] if self.len() > 0 else None
 
     def last(self) -> T | None:
-        return self._value[-1] if self.len() > 0 else None
+        return self.value()[-1] if self.len() > 0 else None
 
     def len(self) -> int:
         return len(self.value())
@@ -226,21 +224,13 @@ class Seq[T]:
         | Callable[[T, int], TMapped]
         | Callable[[T, int, Sequence[T]], TMapped],
     ) -> Self:
-        callback_args: tuple[str, ...] = cast(Any, callback).__code__.co_varnames
         mapped: list[T] = []
 
-        match len(callback_args):
-            case 3:
-                for index, value in enumerate(self.value()):
-                    mapped.append(callback(value, index, self.value()))
-            case 2:
-                for index, value in enumerate(self.value()):
-                    mapped.append(callback(value, index))
-            case 1:
-                for value in self.value():
-                    mapped.append(callback(value))
-            case _:
-                raise TypeError
+        for index, value in enumerate(self.value()):
+            args = [value, index, self.value()]
+            fn = self._build_callback_partial(callback, args)
+
+            mapped.append(fn())
 
         self._value = self._transform_list_into_sequence_type(mapped)
 
