@@ -43,19 +43,19 @@ class Seq[T]:
 
     @staticmethod
     def _build_callback_partial(
-        callback: Callable[[Any, ...], Any], args: list[Any]
+        callback: Callable[[Any, ...], Any], args: list[Any], min_args_len: int = 1
     ) -> Callable[[], Any]:
         callback_args: tuple[str, ...] = callback.__code__.co_varnames
         callback_args_len = len(callback_args)
         max_args_len = len(args)
         exclusive_stop_index = max_args_len + 1
 
-        for index in range(1, exclusive_stop_index):
+        for index in range(min_args_len, exclusive_stop_index):
             if index == callback_args_len:
                 return partial(callback, *args[:index])
 
         raise TypeError(
-            f'The "callback" argument callable must have 1 to {max_args_len} arguments.'
+            f'The "callback" argument callable must have {min_args_len} to {max_args_len} arguments.'
         )
 
     def _coerce_range_value(
@@ -305,7 +305,7 @@ class Seq[T]:
 
         for index, value in enumerate(self.value()):
             args = [accumulator, value, index, self.value()]
-            accumulator = self._build_callback_partial(callback, args)()
+            accumulator = self._build_callback_partial(callback, args, min_args_len=2)()
 
         return accumulator
 
