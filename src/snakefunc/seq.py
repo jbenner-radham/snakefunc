@@ -352,6 +352,12 @@ class Seq[T]:
         return tuple(self.value())
 
     def value(self) -> Sequence[T]:
+        """
+        Get the value of the sequence.
+
+        :return: A sequence of values.
+        :rtype: Sequence[T]
+        """
         return self._value
 
 

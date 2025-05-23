@@ -113,3 +113,13 @@ from snakefunc import seq
 
 assert seq([1, 2, 3]).to_tuple() == (1, 2, 3)
 ```
+
+### `.value()`
+
+Get the value of the sequence.
+
+```python
+from snakefunc import seq
+
+assert seq("Hi!").value() == "Hi!"
+```
