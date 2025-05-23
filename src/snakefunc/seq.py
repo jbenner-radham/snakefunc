@@ -46,18 +46,17 @@ class Seq[T]:
         callback: Callable[[...], TPartialReturn], args: list[Any]
     ) -> Callable[[], TPartialReturn]:
         callback_args: tuple[str, ...] = callback.__code__.co_varnames
+        callback_args_len = len(callback_args)
+        max_args_len = len(args)
+        exclusive_stop_index = max_args_len + 1
 
-        match len(callback_args):
-            case 3:
-                return partial(callback, *args)
-            case 2:
-                return partial(callback, *args[:2])
-            case 1:
-                return partial(callback, *args[:1])
-            case _:
-                raise TypeError(
-                    'The "callback" argument callable must have 1 to 3 arguments.'
-                )
+        for index in range(1, exclusive_stop_index):
+            if index == callback_args_len:
+                return partial(callback, *args[:index])
+
+        raise TypeError(
+            f'The "callback" argument callable must have 1 to {max_args_len} arguments.'
+        )
 
     def _coerce_range_value(
         self, value: Sequence[T]
