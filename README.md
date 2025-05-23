@@ -87,16 +87,18 @@ assert seq((5, 3, 0, 9)).to_list() == [5, 3, 0, 9]
 
 ### `.to_str()`
 
-Returns the sequence as a str.
+Get the value of the sequence as a string.
 
 ```python
-# Returns the value `"8675309"`.
-seq([8, 6, 7, 5, 3, 0, 9]).to_str()
+from snakefunc import seq
+
+assert seq([8, 6, 7, 5, 3, 0, 9]).to_str() == "8675309"
 ```
 
-Optionally, a separator may be specified.
+Optionally, joined together with a separator.
 
 ```python
-# Returns the value `"85.5.14"`.
-seq([85, 5, 14]).to_str(separator=".")
+from snakefunc import seq
+
+assert seq([85, 5, 14]).to_str(separator=".") == "85.5.14"
 ```

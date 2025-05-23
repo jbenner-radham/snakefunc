@@ -328,6 +328,14 @@ class Seq[T]:
         return list(self.value())
 
     def to_str(self, separator: str | None = None) -> str:
+        """
+        Get the value of the sequence as a string. Optionally, joined together with a separator.
+
+        :param separator: If desired a separator to join the sequence together with. Defaults to `None`.
+        :type separator: str | None
+        :return: A string representation of the sequence.
+        :rtype: str
+        """
         return (
             "".join(map(str, self.value()))
             if separator is None
