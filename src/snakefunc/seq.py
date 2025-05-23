@@ -139,6 +139,30 @@ class Seq[T]:
         return True
 
     @overload
+    def any(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
+
+    @overload
+    def any(self, callback: Callable[[T, int], bool]) -> Self: ...
+
+    @overload
+    def any(self, callback: Callable[[T], bool]) -> Self: ...
+
+    def any(
+        self,
+        callback: Callable[[T, int, Sequence[T]], bool]
+        | Callable[[T, int], bool]
+        | Callable[[T], bool],
+    ) -> bool:
+        for index, value in enumerate(self.value()):
+            args = [value, index, self.value()]
+            fn = self._build_callback_partial(callback, args)
+
+            if fn() is True:
+                return True
+
+        return False
+
+    @overload
     def filter(self, callback: Callable[[T], bool]) -> Self: ...
 
     @overload
