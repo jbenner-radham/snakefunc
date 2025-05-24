@@ -250,8 +250,13 @@ class seq[T]:
         :type end: int | None
         :return: The number of times `item` occurs in the sequence.
         :rtype: int
-        :raises: TypeError
+        :raises TypeError: If `start` and/or `end` arguments are supplied for an incompatible sequence.
         """
+
+        # TODO: Revisit the signature of this method. The `Sequence` interface only has the `item`
+        #       argument. Should we strictly conform to that? Also, if we do keep the `start` and
+        #       `stop` arguments should they be defined like they are for the `index` method?
+
         if start is None and end is not None:
             raise TypeError(
                 'The "start" argument cannot be "None" if the "end" argument is specified.'
