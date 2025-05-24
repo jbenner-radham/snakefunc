@@ -1,3 +1,1 @@
-from snakefunc.seq import Seq
-
-seq = Seq
+from snakefunc.seq import seq

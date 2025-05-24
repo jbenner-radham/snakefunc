@@ -392,3 +392,6 @@ class Seq[T]:
         :rtype: Sequence[T]
         """
         return self._value
+
+
+seq = Seq
