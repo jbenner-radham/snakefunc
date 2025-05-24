@@ -1,14 +1,13 @@
 from expects import be_a, equal, expect
 
 from snakefunc import seq
-from snakefunc.seq import Seq
 
 
 def test_filter_with_a_lambda_with_one_argument() -> None:
     objects = [{"name": "foo", "id": 1}, {"name": "bar", "id": 2}]
     result = seq(objects).filter(lambda obj: obj["name"] == "foo")
 
-    expect(result).to(be_a(Seq))
+    expect(result).to(be_a(seq))
 
 
 def test_filter_with_a_lambda_with_one_argument_and_converted_to_list() -> None:

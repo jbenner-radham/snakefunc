@@ -7,7 +7,7 @@ type CoercibleSequenceType = Literal["bytearray", "bytes", "list", "str", "tuple
 type SequenceType = CoercibleSequenceType | RangeType
 
 
-class Seq[T]:
+class seq[T]:
     def __init__(
         self, sequence: Sequence[T], coerce_range_into: CoercibleSequenceType = "tuple"
     ) -> None:
@@ -497,6 +497,3 @@ class Seq[T]:
         :rtype: Sequence[T]
         """
         return self._value
-
-
-seq = Seq

@@ -1,14 +1,13 @@
 from expects import be_a, equal, expect
 
 from snakefunc import seq
-from snakefunc.seq import Seq
 
 
 def test_map_with_a_lambda_with_one_argument() -> None:
     objects = [{"name": "foo", "id": 1}, {"name": "bar", "id": 2}]
     result = seq(objects).map(lambda obj: obj["name"])
 
-    expect(result).to(be_a(Seq))
+    expect(result).to(be_a(seq))
 
 
 def test_map_with_a_lambda_with_one_argument_and_converted_to_list() -> None:
