@@ -11,6 +11,33 @@ def test_getitem_dunder_method_with_a_slice() -> None:
     expect(seq((1, 2, 3))[1:]).to(equal((2, 3)))
 
 
+def test_iter_dunder_method_with_a_str() -> None:
+    result: list[str] = []
+
+    for value in seq(["foo", "bar", "baz"]):
+        result.append(value)
+
+    expect(result).to(equal(["foo", "bar", "baz"]))
+
+
+def test_iter_dunder_method_with_a_range() -> None:
+    result: list[int] = []
+
+    for value in seq(range(6)):
+        result.append(value)
+
+    expect(result).to(equal([0, 1, 2, 3, 4, 5]))
+
+
+def test_iter_dunder_method_with_a_tuple_of_floats() -> None:
+    result: list[float] = []
+
+    for value in seq((5.55, 1.337)):
+        result.append(value)
+
+    expect(result).to(equal([5.55, 1.337]))
+
+
 def test_len_dunder_method_with_a_str() -> None:
     expect(len(seq("Hello!"))).to(equal(6))
 

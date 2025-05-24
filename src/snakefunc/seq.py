@@ -1,4 +1,4 @@
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterator, Sequence
 from functools import partial
 from typing import Any, Literal, Self, cast, overload
 
@@ -57,6 +57,15 @@ class seq[T]:
         :rtype: T
         """
         return self.value()[item]
+
+    def __iter__(self) -> Iterator[T]:
+        """
+        Enables iterating over the sequence.
+
+        :return: An iterator of the sequence.
+        :rtype: Iterator[T]
+        """
+        return iter(self.value())
 
     def __len__(self) -> int:
         """
