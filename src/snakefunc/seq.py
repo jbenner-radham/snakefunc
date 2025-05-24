@@ -401,6 +401,40 @@ class Seq[T]:
         """
         return tuple(self.value())
 
+    def unique(self) -> Self:
+        """
+        Find the unique items in the sequence.
+
+        >>> seq((1, 2, 2, 3, 4, 4, 5)).unique().value()
+        (1, 3, 5)
+
+        :return: The class instance for method chaining.
+        :rtype: Self
+        """
+        counts: dict[str, int] = {}
+        unique_items: list[T] = []
+
+        for item in self.value():
+            key = str(item)
+            counts[key] = counts.get(key, 0) + 1
+
+            if counts.get(key) == 1:
+                unique_items.append(item)
+            elif counts.get(key) > 1:
+                unique_items.remove(item)
+
+        """ Use this for a dedupe method."""
+        # for item in self.value():
+        #     key = str(item)
+        #     counts[key] = counts.get(key, 0) + 1
+        #
+        #     if counts.get(key) == 1:
+        #         unique_items.append(item)
+
+        self._value = self._transform_list_into_sequence_type(unique_items)
+
+        return self
+
     def value(self) -> Sequence[T]:
         """
         Get the value of the sequence.

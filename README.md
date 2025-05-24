@@ -124,6 +124,16 @@ from snakefunc import seq
 assert seq([1, 2, 3]).to_tuple() == (1, 2, 3)
 ```
 
+### `.unique()`
+
+Find the unique items in the sequence.
+
+```python
+from snakefunc import seq
+
+assert seq((1, 2, 2, 3, 4, 4, 5)).unique().value() == (1, 3, 5)
+```
+
 ### `.value()`
 
 Get the value of the sequence.
