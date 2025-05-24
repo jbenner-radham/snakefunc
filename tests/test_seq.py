@@ -3,6 +3,14 @@ from expects import be_none, equal, expect
 from snakefunc import seq
 
 
+def test_getitem_dunder_method_with_an_index() -> None:
+    expect(seq((1, 2, 3))[-1]).to(equal(3))
+
+
+def test_getitem_dunder_method_with_a_slice() -> None:
+    expect(seq((1, 2, 3))[1:]).to(equal((2, 3)))
+
+
 def test_find_using_a_lambda_with_a_list_of_dicts() -> None:
     objects = [
         {"id": 1, "name": "foo"},

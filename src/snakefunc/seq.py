@@ -41,6 +41,23 @@ class Seq[T]:
     def __call__(cls, *args, **kwargs) -> Self:
         return cls(*args, **kwargs)
 
+    def __getitem__(self, item: int | slice) -> T:
+        """
+        Enables getting an item or items from the sequence using an index or slice.
+
+        >>> seq("Hi!")[-1]
+        !
+
+        >>> seq("Hi!")[1:]
+        i!
+
+        :param item: The index or slice of the desired item(s).
+        :type item: int | slice
+        :return: The requested item(s) of the sequence.
+        :rtype: T
+        """
+        return self.value()[item]
+
     def __len__(self) -> int:
         """
         Enables compatability with the `len()` function.
