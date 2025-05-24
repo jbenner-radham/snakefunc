@@ -95,6 +95,18 @@ class seq[T]:
         """
         return self.len()
 
+    def __reversed__(self) -> Iterator[T]:
+        """
+        Enables compatability with the `reversed()` function.
+
+        >>> list(reversed(seq([1, 2, 3])))
+        [3, 2, 1]
+
+        :return: An iterator of the reversed sequence.
+        :rtype: Iterator[T]
+        """
+        return reversed(self.value())
+
     @staticmethod
     def _build_callback_partial(
         callback: Callable[..., Any], args: list[Any], min_args_len: int = 1

@@ -54,6 +54,21 @@ def test_len_dunder_method_with_a_tuple() -> None:
     expect(len(seq((3, 4, 5)))).to(equal(3))
 
 
+def test_reversed_dunder_method_with_a_list_of_ints() -> None:
+    result: list[int] = []
+
+    for value in reversed(seq([1, 2, 3, 4, 5])):
+        result.append(value)
+
+    expect(result).to(equal([5, 4, 3, 2, 1]))
+
+
+def test_reversed_dunder_method_with_a_str() -> None:
+    result = tuple(reversed(seq("Hello!")))
+
+    expect(result).to(equal(("!", "o", "l", "l", "e", "H")))
+
+
 def test_first_with_an_empty_list() -> None:
     result = seq([]).first()
 
