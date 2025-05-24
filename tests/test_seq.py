@@ -11,6 +11,14 @@ def test_getitem_dunder_method_with_a_slice() -> None:
     expect(seq((1, 2, 3))[1:]).to(equal((2, 3)))
 
 
+def test_len_dunder_method_with_a_str() -> None:
+    expect(len(seq("Hello!"))).to(equal(6))
+
+
+def test_len_dunder_method_with_a_tuple() -> None:
+    expect(len(seq((3, 4, 5)))).to(equal(3))
+
+
 def test_find_using_a_lambda_with_a_list_of_dicts() -> None:
     objects = [
         {"id": 1, "name": "foo"},
