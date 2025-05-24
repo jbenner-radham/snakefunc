@@ -77,6 +77,26 @@ Returns the first item in the sequence, or `None` if the sequence is empty.
 seq([1, 2, 3]).first()
 ```
 
+### `.index()`
+
+Returns the index of the first occurrence of `item` in the sequence.
+
+```python
+from snakefunc import seq
+
+assert seq("abc").index("c") == 2
+```
+
+Optionally, `start` and `stop` arguments can also be provided.
+
+```python
+from snakefunc import seq
+
+assert seq(("foo", "bar", "foo", "foo")).index("foo", 1, 3) == 2
+```
+
+Note that if the sequence is of the `range` type, then the `start` and `stop` arguments are not supported.
+
 ### `.last()`
 
 Returns the last item in the sequence, or `None` if the sequence is empty.

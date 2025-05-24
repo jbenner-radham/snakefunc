@@ -2,6 +2,8 @@ from collections.abc import Callable, Iterator, Sequence
 from functools import partial
 from typing import Any, Literal, Self, cast, overload
 
+from snakefunc.identity import is_ellipsis
+
 type RangeType = Literal["range"]
 type CoercibleSequenceType = Literal["bytearray", "bytes", "list", "str", "tuple"]
 type SequenceType = CoercibleSequenceType | RangeType
@@ -348,6 +350,41 @@ class seq[T]:
 
     def first(self) -> T | None:
         return self.value()[0] if self.len() > 0 else None
+
+    def index(self, item: T, start: int = 0, stop: int = ...) -> int:
+        """
+        Returns the index of the first occurrence of `item` in the sequence.
+
+        >>> seq("abc").index("c")
+        2
+
+        Optionally, `start` and `stop` arguments can also be provided.
+
+        >>> seq(("foo", "bar", "foo", "foo")).index("foo", 1, 3)
+        2
+
+        Note that if the sequence is of the `range` type, then the `start`
+        and `stop` arguments are not supported.
+
+        :param item: The item to search for.
+        :type item: T
+        :param start: The index to start the search from. Optional, defaults to `0`.
+        :type start: int
+        :param stop: The exclusive index to stop the search at. Optional, defaults to `...`.
+        :type stop: int
+        :return: The index of the desired item.
+        :rtype: int
+        """
+
+        # Ranges don't support the `start` and `end` arguments even though they're
+        # of the `Sequence` type. I'm confused, but here's a workaround regardless.
+        if self._get_sequence_type() == "range" and start == 0 and is_ellipsis(stop):
+            return self.value().index(item)
+
+        if isinstance(stop, int):
+            return self.value().index(item, start, stop)
+
+        return self.value().index(item, start)
 
     def last(self) -> T | None:
         return self.value()[-1] if self.len() > 0 else None
