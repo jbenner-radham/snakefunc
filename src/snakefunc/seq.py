@@ -188,6 +188,30 @@ class Seq[T]:
 
         return False
 
+    def deduplicate(self) -> Self:
+        """
+        Deduplicate the items in the sequence.
+
+        >>> seq((1, 2, 2, 3, 4, 4, 5)).deduplicate().value()
+        (1, 2, 3, 4, 5)
+
+        :return: The class instance for method chaining.
+        :rtype: Self
+        """
+        counts: dict[str, int] = {}
+        unique_items: list[T] = []
+
+        for item in self.value():
+            key = str(item)
+            counts[key] = counts.get(key, 0) + 1
+
+            if counts.get(key) == 1:
+                unique_items.append(item)
+
+        self._value = self._transform_list_into_sequence_type(unique_items)
+
+        return self
+
     def duplicates(self) -> Self:
         """
         Find the duplicate values in the sequence.
@@ -422,14 +446,6 @@ class Seq[T]:
                 unique_items.append(item)
             elif counts.get(key) > 1:
                 unique_items.remove(item)
-
-        """ Use this for a dedupe method."""
-        # for item in self.value():
-        #     key = str(item)
-        #     counts[key] = counts.get(key, 0) + 1
-        #
-        #     if counts.get(key) == 1:
-        #         unique_items.append(item)
 
         self._value = self._transform_list_into_sequence_type(unique_items)
 
