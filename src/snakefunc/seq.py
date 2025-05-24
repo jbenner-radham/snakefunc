@@ -76,6 +76,8 @@ class seq[T]:
         """
         Enables iterating over the sequence.
 
+        >>> for value in seq([1, 2, 3]): ...
+
         :return: An iterator of the sequence.
         :rtype: Iterator[T]
         """
