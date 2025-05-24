@@ -41,6 +41,20 @@ class seq[T]:
     def __call__(cls, *args, **kwargs) -> Self:
         return cls(*args, **kwargs)
 
+    def __contains__(self, item: T) -> bool:
+        """
+        Adds compatability for membership test operators.
+
+        >>> 5 in seq((1, 2, 3, 4, 5))
+        True
+
+        :param item: The item to check for in the sequence.
+        :type item: T
+        :return: `True` or `False` depending on if the item is in the sequence.
+        :rtype: bool
+        """
+        return self.value().__contains__(item)
+
     def __getitem__(self, item: int | slice) -> T:
         """
         Enables getting an item or items from the sequence using an index or slice.

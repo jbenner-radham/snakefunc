@@ -1,6 +1,14 @@
-from expects import be_none, equal, expect
+from expects import be_none, be_true, equal, expect
 
 from snakefunc import seq
+
+
+def test_contains_dunder_method_with_a_str() -> None:
+    expect("foo" in seq("foo bar baz")).to(be_true)
+
+
+def test_contains_dunder_method_with_a_tuple_of_ints() -> None:
+    expect(5 in seq((1, 2, 3, 4, 5))).to(be_true)
 
 
 def test_getitem_dunder_method_with_an_index() -> None:
