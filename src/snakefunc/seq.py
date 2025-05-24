@@ -41,6 +41,18 @@ class Seq[T]:
     def __call__(cls, *args, **kwargs) -> Self:
         return cls(*args, **kwargs)
 
+    def __len__(self) -> int:
+        """
+        Enables compatability with the `len()` function.
+
+        >>> len(seq("Hi!"))
+        3
+
+        :return: The length of the sequence.
+        :rtype: int
+        """
+        return self.len()
+
     @staticmethod
     def _build_callback_partial(
         callback: Callable[..., Any], args: list[Any], min_args_len: int = 1
