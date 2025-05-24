@@ -188,6 +188,44 @@ class Seq[T]:
 
         return False
 
+    def count(self, item: T, start: int | None = None, end: int | None = None) -> int:
+        """
+        Get the number of times `item` occurs in the sequence.
+
+        >>> seq([1, 3, 3, 7]).count(3)
+        2
+
+        Optionally, sequences of `bytearray`, `bytes`, and `str` types support the `start`
+        and `end` arguments. Other types will raise a `TypeError` if they are provided.
+
+        >>> seq[bytes](b"123455555").count(b"5", 0, 5)
+        1
+
+        If the `end` argument is specified, then the `start` argument must not be `None`.
+
+        :param item: The item to be counted.
+        :type item: T
+        :param start: The index to start the count from. Optional, defaults to `None`.
+        :type start: int | None
+        :param end: The exclusive index to stop the count at. Optional, defaults to `None`.
+        :type end: int | None
+        :return: The number of times `item` occurs in the sequence.
+        :rtype: int
+        :raises: TypeError
+        """
+        if start is None and end is not None:
+            raise TypeError(
+                'The "start" argument cannot be "None" if the "end" argument is specified.'
+            )
+
+        if start is not None and end is not None:
+            return cast(bytearray | bytes | str, self.value()).count(item, start, end)
+
+        if start is not None and end is None:
+            return cast(bytearray | bytes | str, self.value()).count(item, start)
+
+        return self.value().count(item)
+
     def deduplicate(self) -> Self:
         """
         Deduplicate the items in the sequence.

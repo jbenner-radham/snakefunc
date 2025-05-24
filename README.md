@@ -16,6 +16,24 @@ from snakefunc import seq
 
 The `seq` function is used to gather a sequence (e.g., a `list`, etc.) which can then be worked with utilizing chained methods.
 
+### `.count()`
+
+Get the number of times an item occurs in the sequence.
+
+```python
+from snakefunc import seq
+
+assert seq([1, 3, 3, 7]).count(3) == 2
+```
+
+Optionally, sequences of `bytearray`, `bytes`, and `str` types support the `start` and `end` arguments. Other types will raise a `TypeError` if they are provided.
+
+```python
+from snakefunc import seq
+
+assert seq[bytes](b"123455555").count(b"5", 0, 5) == 1
+```
+
 ### `.deduplicate()`
 
 Deduplicate the items in the sequence.
