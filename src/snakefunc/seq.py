@@ -159,6 +159,27 @@ class Seq[T]:
 
         return False
 
+    def duplicates(self) -> Self:
+        """
+        Find the duplicate values in the sequence.
+
+        :return: The class instance for method chaining.
+        :rtype: Self
+        """
+        counts: dict[str, int] = {}
+        duplicates: list[T] = []
+
+        for index, value in enumerate(self.value()):
+            key = str(value)
+            counts[key] = counts.get(key, 0) + 1
+
+            if counts.get(key) == 2:
+                duplicates.append(value)
+
+        self._value = self._transform_list_into_sequence_type(duplicates)
+
+        return self
+
     @overload
     def filter(self, callback: Callable[[T], bool]) -> Self: ...
 

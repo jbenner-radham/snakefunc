@@ -16,6 +16,16 @@ from snakefunc import seq
 
 The `seq` function is used to gather a sequence (e.g., a `list`, etc.) which can then be worked with utilizing chained methods.
 
+### `.duplicates()`
+
+Find the duplicate values in the sequence.
+
+```python
+from snakefunc import seq
+
+assert seq("Hello, world!").duplicates().to_tuple() == ("l", "o")
+```
+
 ### `.find()`
 
 Find an item in your sequence and return it if it exists. Otherwise, returns `None`.
