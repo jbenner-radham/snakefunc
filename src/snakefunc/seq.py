@@ -143,7 +143,8 @@ class seq[T]:
             case _:
                 raise ValueError()
 
-    def _get_sequence_type(self) -> SequenceType:
+    @property
+    def _sequence_type(self) -> SequenceType:
         match self.value():
             case bytearray():
                 return "bytearray"
@@ -161,7 +162,7 @@ class seq[T]:
                 raise ValueError()
 
     def _transform_list_into_sequence_type(self, value: list[T]) -> Sequence[T]:
-        match self._get_sequence_type():
+        match self._sequence_type:
             case "bytearray":
                 return bytearray(value)
             case "bytes":
@@ -176,7 +177,7 @@ class seq[T]:
                 return tuple(value)
             case _:
                 raise TypeError(
-                    f'Cannot transform list. Non-sequence type of "{self._get_sequence_type()}" specified.'
+                    f'Cannot transform list. Non-sequence type of "{self._sequence_type}" specified.'
                 )
 
     @overload
@@ -383,7 +384,7 @@ class seq[T]:
 
         # Ranges don't support the `start` and `end` arguments even though they're
         # of the `Sequence` type. I'm confused, but here's a workaround regardless.
-        if self._get_sequence_type() == "range" and start == 0 and is_ellipsis(stop):
+        if self._sequence_type == "range" and start == 0 and is_ellipsis(stop):
             return self.value().index(item)
 
         if isinstance(stop, int):
