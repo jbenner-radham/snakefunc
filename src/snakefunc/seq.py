@@ -228,7 +228,7 @@ class seq[T]:
 
         return False
 
-    def count(self, item: T, start: int | None = None, end: int | None = None) -> int:
+    def count(self, item: T, start: int = 0, end: int = ...) -> int:
         """
         Get the number of times `item` occurs in the sequence.
 
@@ -245,28 +245,22 @@ class seq[T]:
 
         :param item: The item to be counted.
         :type item: T
-        :param start: The index to start the count from. Optional, defaults to `None`.
-        :type start: int | None
-        :param end: The exclusive index to stop the count at. Optional, defaults to `None`.
-        :type end: int | None
+        :param start: The index to start the count from. Optional, defaults to `0`.
+        :type start: int
+        :param end: The exclusive index to stop the count at. Optional, defaults to `...`.
+        :type end: int
         :return: The number of times `item` occurs in the sequence.
         :rtype: int
         :raises TypeError: If `start` and/or `end` arguments are supplied for an incompatible sequence.
         """
 
         # TODO: Revisit the signature of this method. The `Sequence` interface only has the `item`
-        #       argument. Should we strictly conform to that? Also, if we do keep the `start` and
-        #       `stop` arguments should they be defined like they are for the `index` method?
+        #       argument. Should we strictly conform to that?
 
-        if start is None and end is not None:
-            raise TypeError(
-                'The "start" argument cannot be "None" if the "end" argument is specified.'
-            )
-
-        if start is not None and end is not None:
+        if not is_ellipsis(end):
             return cast(bytearray | bytes | str, self.value()).count(item, start, end)
 
-        if start is not None and end is None:
+        if start != 0 and is_ellipsis(end):
             return cast(bytearray | bytes | str, self.value()).count(item, start)
 
         return self.value().count(item)
