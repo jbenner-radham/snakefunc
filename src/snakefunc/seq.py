@@ -1,5 +1,6 @@
 from collections.abc import Callable, Iterator, Sequence
 from functools import partial
+from types import FunctionType
 from typing import Any, Literal, Self, cast, overload
 
 from snakefunc.identity import is_ellipsis
@@ -113,7 +114,9 @@ class seq[T]:
     def _build_callback_partial(
         callback: Callable[..., Any], args: list[Any], min_args_len: int = 1
     ) -> Callable[[], Any]:
-        callback_args: tuple[str, ...] = callback.__code__.co_varnames
+        callback_args: tuple[str, ...] = cast(
+            FunctionType, callback
+        ).__code__.co_varnames
         callback_args_len = len(callback_args)
         max_args_len = len(args)
         exclusive_stop_index = max_args_len + 1
