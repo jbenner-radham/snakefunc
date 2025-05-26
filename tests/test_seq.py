@@ -66,6 +66,22 @@ def test_eq_dunder_method_with_a_tuple_of_ints() -> None:
     expect(seq(value)).to(equal(value))
 
 
+def test_delitem_dunder_method_with_a_range() -> None:
+    result = seq(range(1, 6))
+
+    del result[2]
+
+    expect(result).to(equal((1, 2, 4, 5)))
+
+
+def test_delitem_dunder_method_with_a_str() -> None:
+    result = seq("foo")
+
+    del result[0]
+
+    expect(result).to(equal("oo"))
+
+
 def test_getitem_dunder_method_with_an_index() -> None:
     expect(seq((1, 2, 3))[-1]).to(equal(3))
 

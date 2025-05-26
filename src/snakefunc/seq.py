@@ -73,15 +73,10 @@ class seq[T]:
             return seq(cast(list[T], self.value()) + cast(list[T], other))
 
         if self._is_range and is_range(other):
-            sequence_self = self._coerce_range_value(self.value())
-            sequence_other = self._coerce_range_value(other)
+            sequence_self = self._coerce_value(self.value())
+            sequence_other = self._coerce_value(other)
 
-            return seq(
-                sequence_self
-                + cast(
-                    bytearray | bytes | list[T] | str | tuple[T, ...], sequence_other
-                )
-            )
+            return seq(sequence_self + sequence_other)
 
         if self._is_str and is_str(other):
             return seq(cast(str, self.value()) + cast(str, other))
@@ -89,34 +84,16 @@ class seq[T]:
         if self._is_tuple and is_tuple(other):
             return seq(cast(tuple, self.value()) + cast(tuple, other))
 
-        sequence_type = (
-            self._sequence_type if not self._is_range else self._coerce_range_into
+        sequence_type = cast(
+            CoercibleSequenceType,
+            self._sequence_type if not self._is_range else self._coerce_range_into,
         )
         sequence_self = (
-            self.value()
-            if not self._is_range
-            else self._coerce_range_value(self.value())
+            self.value() if not self._is_range else self._coerce_value(self.value())
         )
-        sequence_other: Sequence[T]
+        sequence_other = self._coerce_value(other, into_type=sequence_type)
 
-        match sequence_type:
-            case "bytearray":
-                sequence_other = bytearray(other)
-            case "bytes":
-                sequence_other = bytes(other)
-            case "list":
-                sequence_other = list(other)
-            case "str":
-                sequence_other = "".join(map(str, tuple(other)))
-            case "tuple":
-                sequence_other = tuple(other)
-            case _:
-                raise TypeError(f'Unknown sequence type "{sequence_type}".')
-
-        return seq(
-            sequence_self
-            + cast(bytearray | bytes | list[T] | str | tuple[T, ...], sequence_other)
-        )
+        return seq(sequence_self + sequence_other)
 
     def __bool__(self) -> bool:
         """
@@ -147,6 +124,35 @@ class seq[T]:
         :rtype: bool
         """
         return self.value().__contains__(item)
+
+    def __delitem__(self, index: int | slice) -> None:
+        """
+        Adds support for deleting items from the sequence.
+
+        >>> del seq((1, 2, 3, 4, 5))[2]
+
+        :param index: The index or slice of the item(s) in the sequence to delete.
+        :type index: int | slice
+        :return: Nothing.
+        :rtype: None
+        """
+
+        if self._is_mutable_type:
+            del cast(bytearray | list, self.value())[index]
+        elif self._is_range:
+            self._value = self._coerce_value(self.value())
+            mutable_copy = list(self.value())
+
+            del mutable_copy[index]
+
+            self._value = self._coerce_value(mutable_copy)
+        else:
+            original_type = cast(CoercibleSequenceType, self._sequence_type)
+            mutable_copy = list(self.value())
+
+            del mutable_copy[index]
+
+            self._value = self._coerce_value(mutable_copy, into_type=original_type)
 
     def __eq__(self, other: Any) -> bool:
         """
@@ -253,10 +259,12 @@ class seq[T]:
             f'The "callback" argument callable must have {min_args_len} to {max_args_len} arguments.'
         )
 
-    def _coerce_range_value(
-        self, value: Sequence[T]
+    def _coerce_value(
+        self, value: Sequence[T], into_type: CoercibleSequenceType | None = None
     ) -> bytearray | bytes | list[T] | str | tuple[T, ...]:
-        match self._coerce_range_into:
+        coerce_into = self._coerce_range_into if into_type is None else into_type
+
+        match coerce_into:
             case "bytearray":
                 return bytearray(value)
             case "bytes":
@@ -268,7 +276,7 @@ class seq[T]:
             case "tuple":
                 return tuple(value)
             case _:
-                raise ValueError()
+                raise TypeError(f'Cannot coerce into unsupported type "{coerce_into}".')
 
     @property
     def _is_bytearray(self) -> bool:
@@ -281,6 +289,10 @@ class seq[T]:
     @property
     def _is_list(self) -> bool:
         return self._sequence_type == "list"
+
+    @property
+    def _is_mutable_type(self) -> bool:
+        return self._sequence_type == ("bytearray", "list")
 
     @property
     def _is_range(self) -> bool:
@@ -321,7 +333,7 @@ class seq[T]:
             case "list":
                 return value
             case "range":
-                return self._coerce_range_value(value)
+                return self._coerce_value(value)
             case "str":
                 return "".join(value)
             case "tuple":
