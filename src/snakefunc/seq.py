@@ -394,6 +394,18 @@ class seq[T]:
         | Callable[[T, int], bool]
         | Callable[[T], bool],
     ) -> bool:
+        """
+        Iterate over the items in the sequence and return a `bool` indicating if any item matches the callback predicate.
+
+        >>> seq(("foo", "bar", "baz")).any(lambda item: item == "foo")
+        True
+
+        :param callback: A callback predicate which has a value argument, and optionally index and sequence arguments.
+        :type callback: Callable[[T, int, Sequence[T]], bool] | Callable[[T, int], bool] | Callable[[T], bool]
+        :return: `True` if any item in the sequence matches the callback predicate, `False` otherwise.
+        :rtype: bool
+        """
+
         for index, value in enumerate(self.value()):
             args = [value, index, self.value()]
             fn = self._build_callback_partial(callback, args)

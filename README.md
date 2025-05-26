@@ -16,6 +16,16 @@ from snakefunc import seq
 
 The `seq` function is used to gather a sequence (e.g., a `list`, etc.) which can then be worked with utilizing chained methods.
 
+### `.any()`
+
+Iterate over the items in the sequence and return a `bool` indicating if any item matches the callback predicate.
+
+```python
+from snakefunc import seq
+
+assert seq(("foo", "bar", "baz")).any(lambda item: item == "foo") is True
+```
+
 ### `.clear()`
 
 Remove all items from the underlying sequence.
