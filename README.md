@@ -87,6 +87,16 @@ from snakefunc import seq
 assert seq("Hello, world!").duplicates().to_tuple() == ("l", "o")
 ```
 
+### `.filter()`
+
+Iterate over the sequence and retain the items for which the predicate callback returns `True`.
+
+```python
+from snakefunc import seq
+
+assert seq([1, 2, 3, 4, 5, 6]).filter(lambda number: number % 2 == 0).value() == [2, 4, 6]
+```
+
 ### `.find()`
 
 Find an item in your sequence and return it if it exists. Otherwise, returns `None`.

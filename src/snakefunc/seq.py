@@ -527,20 +527,32 @@ class seq[T]:
         return self
 
     @overload
-    def filter(self, callback: Callable[[T], bool]) -> Self: ...
+    def filter(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
 
     @overload
     def filter(self, callback: Callable[[T, int], bool]) -> Self: ...
 
     @overload
-    def filter(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
+    def filter(self, callback: Callable[[T], bool]) -> Self: ...
 
     def filter(
         self,
-        callback: Callable[[T], bool]
+        callback: Callable[[T, int, Sequence[T]], bool]
         | Callable[[T, int], bool]
-        | Callable[[T, int, Sequence[T]], bool],
+        | Callable[[T], bool],
     ) -> Self:
+        """
+        Iterate over the sequence and retain the items for which the predicate callback returns `True`.
+
+        >>> seq([1, 2, 3, 4, 5, 6]).filter(lambda number: number % 2 == 0).value()
+        [2, 4, 6]
+
+        :param callback: A predicate callback which has a `value` argument, and optionally `index` and `sequence` arguments.
+        :type callback: Callable[[T, int, Sequence[T]], bool] | Callable[[T, int], bool] | Callable[[T], bool]
+        :return: The class instance for method chaining.
+        :rtype: Self
+        """
+
         if self.len() == 0:
             return self
 
