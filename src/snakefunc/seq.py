@@ -40,6 +40,18 @@ class seq[T]:
         self._value: Sequence[T] = sequence
         self._coerce_range_into: CoercibleSequenceType = coerce_range_into
 
+    def __bool__(self) -> bool:
+        """
+        Adds compatability for truth value testing.
+
+        >>> bool(seq(["a", "b", "c"]))
+        True
+
+        :return: `True` if the sequence length is non-zero, `False` otherwise.
+        :rtype: bool
+        """
+        return self.len() != 0
+
     @classmethod
     def __call__(cls, *args, **kwargs) -> Self:
         return cls(*args, **kwargs)

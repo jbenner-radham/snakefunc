@@ -1,6 +1,18 @@
-from expects import be_none, be_true, equal, expect
+from expects import be_false, be_none, be_true, equal, expect
 
 from snakefunc import seq
+
+
+def test_bool_dunder_method_with_a_list_of_strs() -> None:
+    result = seq(["foo", "bar"])
+
+    expect(bool(result)).to(be_true)
+
+
+def test_bool_dunder_method_with_an_empty_list() -> None:
+    result = seq([])
+
+    expect(bool(result)).to(be_false)
 
 
 def test_contains_dunder_method_with_a_str() -> None:
