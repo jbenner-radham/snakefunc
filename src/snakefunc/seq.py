@@ -403,6 +403,23 @@ class seq[T]:
 
         return False
 
+    def clear(self) -> None:
+        """
+        Remove all items from the underlying sequence.
+
+        >>> sequence = seq([1, 2, 3])
+        >>> sequence.clear()
+        >>> sequence.value()
+        []
+
+        TODO: Consider whether we should deviate from the `MutableSequence`
+              interface so we can allow chaining.
+
+        :return: Nothing.
+        :rtype: None
+        """
+        del self[:]
+
     def count(self, item: T, start: int = 0, end: int = ...) -> int:
         """
         Get the number of times `item` occurs in the sequence.
