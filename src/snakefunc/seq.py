@@ -64,25 +64,37 @@ class seq[T]:
         """
 
         if self._is_bytearray and is_bytearray(other):
-            return seq(cast(bytearray, self.value()) + cast(bytearray, other))
+            return seq(
+                cast(bytearray, self.value()) + cast(bytearray, other),
+                self._coerce_range_into,
+            )
 
         if self._is_bytes and is_bytes(other):
-            return seq(cast(bytes, self.value()) + cast(bytes, other))
+            return seq(
+                cast(bytes, self.value()) + cast(bytes, other), self._coerce_range_into
+            )
 
         if self._is_list and is_list(other):
-            return seq(cast(list[T], self.value()) + cast(list[T], other))
+            return seq(
+                cast(list[T], self.value()) + cast(list[T], other),
+                self._coerce_range_into,
+            )
 
         if self._is_range and is_range(other):
             sequence_self = self._coerce_value(self.value())
             sequence_other = self._coerce_value(other)
 
-            return seq(sequence_self + sequence_other)
+            return seq(sequence_self + sequence_other, self._coerce_range_into)
 
         if self._is_str and is_str(other):
-            return seq(cast(str, self.value()) + cast(str, other))
+            return seq(
+                cast(str, self.value()) + cast(str, other), self._coerce_range_into
+            )
 
         if self._is_tuple and is_tuple(other):
-            return seq(cast(tuple, self.value()) + cast(tuple, other))
+            return seq(
+                cast(tuple, self.value()) + cast(tuple, other), self._coerce_range_into
+            )
 
         sequence_type = cast(
             CoercibleSequenceType,
@@ -93,7 +105,7 @@ class seq[T]:
         )
         sequence_other = self._coerce_value(other, into_type=sequence_type)
 
-        return seq(sequence_self + sequence_other)
+        return seq(sequence_self + sequence_other, self._coerce_range_into)
 
     def __bool__(self) -> bool:
         """
