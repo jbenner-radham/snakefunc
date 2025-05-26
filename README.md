@@ -112,8 +112,9 @@ assert seq([0, 1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0).value() =
 Returns the first item in the sequence, or `None` if the sequence is empty.
 
 ```python
-# Returns the int 1.
-seq([1, 2, 3]).first()
+from snakefunc import seq
+
+assert seq([1, 2, 3, 4, 5]).first() == 1
 ```
 
 ### `.index()`

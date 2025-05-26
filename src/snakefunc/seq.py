@@ -607,6 +607,15 @@ class seq[T]:
         return None
 
     def first(self) -> T | None:
+        """
+        Returns the first item in the sequence, or `None` if the sequence is empty.
+
+        >>> seq([1, 2, 3, 4, 5]).first()
+        1
+
+        :return: The first item in the sequence, or `None` if the sequence is empty.
+        :rtype: T
+        """
         return self.value()[0] if self.len() > 0 else None
 
     def index(self, item: T, start: int = 0, stop: int = ...) -> int:
