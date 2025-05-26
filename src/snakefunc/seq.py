@@ -3,7 +3,15 @@ from functools import partial
 from types import FunctionType
 from typing import Any, Literal, Self, cast, overload
 
-from snakefunc.identity import is_ellipsis
+from snakefunc.identity import (
+    is_bytearray,
+    is_bytes,
+    is_ellipsis,
+    is_list,
+    is_range,
+    is_str,
+    is_tuple,
+)
 
 type RangeType = Literal["range"]
 type CoercibleSequenceType = Literal["bytearray", "bytes", "list", "str", "tuple"]
@@ -39,6 +47,72 @@ class seq[T]:
 
         self._value: Sequence[T] = sequence
         self._coerce_range_into: CoercibleSequenceType = coerce_range_into
+
+    def __add__(self, other: Sequence[T]) -> "seq[T]":
+        """
+        Adds support for the addition operator. Which, when used with another sequence will return a combination of the
+        two.
+
+        :param other: The other sequence to be added.
+        :type other: Sequence[T]
+        :return: A new instance of `seq` containing both sequences combined.
+        :rtype: seq[T]
+        """
+
+        if self._is_bytearray and is_bytearray(other):
+            return seq(cast(bytearray, self.value()) + cast(bytearray, other))
+
+        if self._is_bytes and is_bytes(other):
+            return seq(cast(bytes, self.value()) + cast(bytes, other))
+
+        if self._is_list and is_list(other):
+            return seq(cast(list[T], self.value()) + cast(list[T], other))
+
+        if self._is_range and is_range(other):
+            sequence_self = self._coerce_range_value(self.value())
+            sequence_other = self._coerce_range_value(other)
+
+            return seq(
+                sequence_self
+                + cast(
+                    bytearray | bytes | list[T] | str | tuple[T, ...], sequence_other
+                )
+            )
+
+        if self._is_str and is_str(other):
+            return seq(cast(str, self.value()) + cast(str, other))
+
+        if self._is_tuple and is_tuple(other):
+            return seq(cast(tuple, self.value()) + cast(tuple, other))
+
+        sequence_type = (
+            self._sequence_type if not self._is_range else self._coerce_range_into
+        )
+        sequence_self = (
+            self.value()
+            if not self._sequence_type == "range"
+            else self._coerce_range_value(self.value())
+        )
+        sequence_other: Sequence[T]
+
+        match sequence_type:
+            case "bytearray":
+                sequence_other = bytearray(other)
+            case "bytes":
+                sequence_other = bytes(other)
+            case "list":
+                sequence_other = list(other)
+            case "str":
+                sequence_other = "".join(map(str, tuple(other)))
+            case "tuple":
+                sequence_other = tuple(other)
+            case _:
+                raise TypeError(f'Unknown sequence type "{sequence_type}".')
+
+        return seq(
+            sequence_self
+            + cast(bytearray | bytes | list[T] | str | tuple[T, ...], sequence_other)
+        )
 
     def __bool__(self) -> bool:
         """
@@ -191,6 +265,30 @@ class seq[T]:
                 return tuple(value)
             case _:
                 raise ValueError()
+
+    @property
+    def _is_bytearray(self) -> bool:
+        return self._sequence_type == "bytearray"
+
+    @property
+    def _is_bytes(self) -> bool:
+        return self._sequence_type == "bytes"
+
+    @property
+    def _is_list(self) -> bool:
+        return self._sequence_type == "list"
+
+    @property
+    def _is_range(self) -> bool:
+        return self._sequence_type == "range"
+
+    @property
+    def _is_str(self) -> bool:
+        return self._sequence_type == "str"
+
+    @property
+    def _is_tuple(self) -> bool:
+        return self._sequence_type == "tuple"
 
     @property
     def _sequence_type(self) -> SequenceType:

@@ -3,6 +3,37 @@ from expects import be_false, be_none, be_true, equal, expect
 from snakefunc import seq
 
 
+def test_add_dunder_method_with_a_range_and_a_list_of_strs() -> None:
+    """
+    Since ranges don't support addition and cannot be manipulated, we coerce
+    the range into value of the `coerce_range_into` argument which defaults to
+    `"tuple"`. The other sequence being added is then converted into a tuple
+    as well to match the source. Hence, the result of the operation yields a
+    tuple.
+    """
+    a = seq(range(5))
+    b = seq(["foo", "bar", "baz"])
+    result = a + b
+
+    expect(result.value()).to(equal((0, 1, 2, 3, 4, "foo", "bar", "baz")))
+
+
+def test_add_dunder_method_with_two_lists_of_ints() -> None:
+    a = seq([1, 2, 3])
+    b = seq([4, 5, 6])
+    result = a + b
+
+    expect(result.value()).to(equal([1, 2, 3, 4, 5, 6]))
+
+
+def test_add_dunder_method_with_two_strs() -> None:
+    a = seq("abc")
+    b = seq("def")
+    result = a + b
+
+    expect(result.value()).to(equal("abcdef"))
+
+
 def test_bool_dunder_method_with_a_list_of_strs() -> None:
     result = seq(["foo", "bar"])
 
