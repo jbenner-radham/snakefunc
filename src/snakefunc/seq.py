@@ -654,6 +654,15 @@ class seq[T]:
         return self.value().index(item, start)
 
     def last(self) -> T | None:
+        """
+        Returns the last item in the sequence, or `None` if the sequence is empty.
+
+        >>> seq([1, 2, 3, 4, 5]).last()
+        5
+
+        :return: The last item in the sequence, or `None` if the sequence is empty.
+        :rtype: T
+        """
         return self.value()[-1] if self.len() > 0 else None
 
     def len(self) -> int:

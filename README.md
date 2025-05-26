@@ -142,8 +142,9 @@ Note that if the sequence is of the `range` type, then the `start` and `stop` ar
 Returns the last item in the sequence, or `None` if the sequence is empty.
 
 ```python
-# Returns the int 3.
-seq([1, 2, 3]).last()
+from snakefunc import seq
+
+assert seq([1, 2, 3, 4, 5]).last() == 5
 ```
 
 ### `.len()`
