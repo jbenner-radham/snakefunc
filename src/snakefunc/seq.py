@@ -112,6 +112,20 @@ class seq[T]:
         """
         return self.len()
 
+    def __ne__(self, other: Any) -> bool:
+        """
+        Adds compatability for inequality test operators.
+
+        NOTE: This may change in the future, as I'm not certain if checking for
+              inequality with the internal sequence is how this should be handled.
+
+        :param other: The other object to compare to.
+        :type other: Any
+        :return: `True` or `False` depending on if the sequence is not equal to the other object.
+        :rtype: bool
+        """
+        return self.value() != other
+
     def __reversed__(self) -> Iterator[T]:
         """
         Enables compatability with the `reversed()` function.

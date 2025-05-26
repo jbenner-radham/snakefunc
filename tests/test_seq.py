@@ -11,10 +11,10 @@ def test_contains_dunder_method_with_a_tuple_of_ints() -> None:
     expect(5 in seq((1, 2, 3, 4, 5))).to(be_true)
 
 
-def test_eq_dunder_method_with_another_seq_using_the_equal_to_operator() -> None:
+def test_eq_dunder_method_with_another_seq() -> None:
     value = (1, 2, 3, 4, 5)
 
-    expect(seq(value) == seq(value)).to(be_true)
+    expect(seq(value)).to(equal(seq(value)))
 
 
 def test_eq_dunder_method_with_a_tuple_of_ints() -> None:
@@ -64,6 +64,14 @@ def test_len_dunder_method_with_a_str() -> None:
 
 def test_len_dunder_method_with_a_tuple() -> None:
     expect(len(seq((3, 4, 5)))).to(equal(3))
+
+
+def test_ne_dunder_method_with_another_seq() -> None:
+    expect(seq((1, 2, 3))).not_to(equal(seq((4, 5, 6))))
+
+
+def test_ne_dunder_method_with_a_tuple_of_ints() -> None:
+    expect(seq((1, 2, 3))).not_to(equal((4, 5, 6)))
 
 
 def test_reversed_dunder_method_with_a_list_of_ints() -> None:
