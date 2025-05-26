@@ -569,9 +569,39 @@ class seq[T]:
 
         return self
 
-    def find(self, callback: Callable[[T], bool]) -> T | None:
-        for value in self.value():
-            if callback(value):
+    @overload
+    def find(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
+
+    @overload
+    def find(self, callback: Callable[[T, int], bool]) -> Self: ...
+
+    @overload
+    def find(self, callback: Callable[[T], bool]) -> Self: ...
+
+    def find(
+        self,
+        callback: Callable[[T, int, Sequence[T]], bool]
+        | Callable[[T, int], bool]
+        | Callable[[T], bool],
+    ) -> T | None:
+        """
+        Iterate over the sequence and return the first item for which the predicate callback returns `True`. Returns
+        `None` if nothing is found.
+
+        >>> seq([0, 1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0).value()
+        2
+
+        :param callback: A predicate callback which has a `value` argument, and optionally `index` and `sequence` arguments.
+        :type callback: Callable[[T, int, Sequence[T]], bool] | Callable[[T, int], bool] | Callable[[T], bool]
+        :return: The first item found, or `None` if nothing matches.
+        :rtype: T
+        """
+
+        for index, value in enumerate(self.value()):
+            args = [value, index, self.value()]
+            fn = self._build_callback_partial(callback, args)
+
+            if fn():
                 return value
 
         return None

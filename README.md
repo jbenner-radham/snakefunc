@@ -99,16 +99,12 @@ assert seq([1, 2, 3, 4, 5, 6]).filter(lambda number: number % 2 == 0).value() ==
 
 ### `.find()`
 
-Find an item in your sequence and return it if it exists. Otherwise, returns `None`.
+Iterate over the sequence and return the first item for which the predicate callback returns `True`. Returns `None` if nothing is found.
 
 ```python
-objects = [
-    {"id": 1, "name": "foo"},
-    {"id": 2, "name": "bar"},
-]
+from snakefunc import seq
 
-# Returns the dict with the name "foo".
-seq(objects).find(lambda obj: obj["name"] == "foo")
+assert seq([0, 1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0).value() == 2
 ```
 
 ### `.first()`
