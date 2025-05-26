@@ -90,7 +90,7 @@ class seq[T]:
         )
         sequence_self = (
             self.value()
-            if not self._sequence_type == "range"
+            if not self._is_range
             else self._coerce_range_value(self.value())
         )
         sequence_other: Sequence[T]
