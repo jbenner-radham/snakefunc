@@ -11,6 +11,18 @@ def test_contains_dunder_method_with_a_tuple_of_ints() -> None:
     expect(5 in seq((1, 2, 3, 4, 5))).to(be_true)
 
 
+def test_eq_dunder_method_with_another_seq_using_the_equal_to_operator() -> None:
+    value = (1, 2, 3, 4, 5)
+
+    expect(seq(value) == seq(value)).to(be_true)
+
+
+def test_eq_dunder_method_with_a_tuple_of_ints() -> None:
+    value = (1, 2, 3, 4, 5)
+
+    expect(seq(value)).to(equal(value))
+
+
 def test_getitem_dunder_method_with_an_index() -> None:
     expect(seq((1, 2, 3))[-1]).to(equal(3))
 

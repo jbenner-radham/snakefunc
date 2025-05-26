@@ -58,6 +58,20 @@ class seq[T]:
         """
         return self.value().__contains__(item)
 
+    def __eq__(self, other: Any) -> bool:
+        """
+        Adds compatability for equality test operators.
+
+        NOTE: This may change in the future, as I'm not certain if checking for
+              equality with the internal sequence is how this should be handled.
+
+        :param other: The other object to compare to.
+        :type other: Any
+        :return: `True` or `False` depending on if the sequence is equal to the other object.
+        :rtype: bool
+        """
+        return self.value() == other
+
     def __getitem__(self, item: int | slice) -> T:
         """
         Enables getting an item or items from the sequence using an index or slice.
