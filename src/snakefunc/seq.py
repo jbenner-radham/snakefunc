@@ -53,6 +53,8 @@ class seq[T]:
         Adds support for the addition operator. Which, when used with another sequence will return a combination of the
         two.
 
+        >>> seq([1, 2, 3]) + seq([4, 5, 6])
+
         :param other: The other sequence to be added.
         :type other: Sequence[T]
         :return: A new instance of `seq` containing both sequences combined.
