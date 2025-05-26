@@ -74,6 +74,9 @@ class seq[T]:
         """
         Adds compatability for equality test operators.
 
+        >>> seq([1, 2, 3]) == [1, 2, 3]
+        True
+
         NOTE: This may change in the future, as I'm not certain if checking for
               equality with the internal sequence is how this should be handled.
 
@@ -127,6 +130,9 @@ class seq[T]:
     def __ne__(self, other: Any) -> bool:
         """
         Adds compatability for inequality test operators.
+
+        >>> seq([1, 2, 3]) != [4, 5, 6]
+        True
 
         NOTE: This may change in the future, as I'm not certain if checking for
               inequality with the internal sequence is how this should be handled.
