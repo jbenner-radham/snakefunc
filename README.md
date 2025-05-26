@@ -152,8 +152,9 @@ assert seq([1, 2, 3, 4, 5]).last() == 5
 Returns the length of the sequence.
 
 ```python
-# Returns the int 3.
-seq([0, 1, 2]).len()
+from snakefunc import seq
+
+assert seq([1, 2, 3, 4, 5]).len() == 5
 ```
 
 ### `.reduce()`

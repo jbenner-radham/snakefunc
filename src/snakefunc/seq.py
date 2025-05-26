@@ -666,6 +666,15 @@ class seq[T]:
         return self.value()[-1] if self.len() > 0 else None
 
     def len(self) -> int:
+        """
+        Returns the length of the sequence.
+
+        >>> seq([1, 2, 3, 4, 5]).len()
+        5
+
+        :return: The length of the sequence.
+        :rtype: int
+        """
         return len(self.value())
 
     @overload
