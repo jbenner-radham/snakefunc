@@ -19,6 +19,8 @@ type SequenceType = CoercibleSequenceType | RangeType
 
 
 class seq[T]:
+    __slots__ = ("_coerce_range_into", "_value")
+
     def __init__(
         self, sequence: Sequence[T], coerce_range_into: CoercibleSequenceType = "tuple"
     ) -> None:
