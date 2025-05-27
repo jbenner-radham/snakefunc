@@ -678,22 +678,34 @@ class seq[T]:
         return len(self.value())
 
     @overload
-    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Self: ...
+    def map[TMapped](
+        self, callback: Callable[[T, int, Sequence[T]], TMapped]
+    ) -> Self: ...
 
     @overload
     def map[TMapped](self, callback: Callable[[T, int], TMapped]) -> Self: ...
 
     @overload
-    def map[TMapped](
-        self, callback: Callable[[T, int, Sequence[T]], TMapped]
-    ) -> Self: ...
+    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Self: ...
 
     def map[TMapped](
         self,
-        callback: Callable[[T], TMapped]
+        callback: Callable[[T, int, Sequence[T]], TMapped]
         | Callable[[T, int], TMapped]
-        | Callable[[T, int, Sequence[T]], TMapped],
+        | Callable[[T], TMapped],
     ) -> Self:
+        """
+        Create a new sequence populated by the results of the callback applied to each item in the current sequence.
+
+        >>> seq([1, 2, 3]).map(lambda number: number * 2).value()
+        [2, 4, 6]
+
+        :param callback: A mapper callback which has a `value` argument, and optionally `index` and `sequence` arguments.
+        :type callback: Callable[[T, int, Sequence[T]], bool] | Callable[[T, int], bool] | Callable[[T], bool]
+        :return: The class instance for method chaining.
+        :rtype: Self
+        """
+
         mapped: list[T] = []
 
         for index, value in enumerate(self.value()):

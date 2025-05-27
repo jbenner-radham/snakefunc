@@ -157,6 +157,16 @@ from snakefunc import seq
 assert seq([1, 2, 3, 4, 5]).len() == 5
 ```
 
+### `.map()`
+
+Create a new sequence populated by the results of the callback applied to each item in the current sequence.
+
+```python
+from snakefunc import seq
+
+assert seq([1, 2, 3]).map(lambda number: number * 2).value() == [2, 4, 6]
+```
+
 ### `.reduce()`
 
 Returns the result of the sequence being reduced to a singular value.
