@@ -148,6 +148,24 @@ def test_reversed_dunder_method_with_a_str() -> None:
     expect(result).to(equal(("!", "o", "l", "l", "e", "H")))
 
 
+def test_str_dunder_method_with_a_list_of_ints() -> None:
+    result = seq([1, 2, 3])
+
+    expect(str(result)).to(equal("[1, 2, 3]"))
+
+
+def test_str_dunder_method_with_a_range() -> None:
+    result = seq(range(5))
+
+    expect(str(result)).to(equal("range(0, 5)"))
+
+
+def test_str_dunder_method_with_a_tuple_of_strs() -> None:
+    result = seq(("foo", "bar", "baz"))
+
+    expect(str(result)).to(equal("('foo', 'bar', 'baz')"))
+
+
 def test_first_with_an_empty_list() -> None:
     result = seq([]).first()
 

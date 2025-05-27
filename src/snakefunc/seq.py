@@ -252,6 +252,19 @@ class seq[T]:
         """
         return reversed(self.value())
 
+    def __str__(self) -> str:
+        """
+        Enables the ability to return a string representation of the underlying sequence.
+
+        >>> str(seq([1, 2, 3]))
+        '[1, 2, 3]'
+
+        :return: A string representation of the sequence.
+        :rtype: str
+        """
+
+        return str(self.value())
+
     @staticmethod
     def _build_callback_partial(
         callback: Callable[..., Any], args: list[Any], min_args_len: int = 1
