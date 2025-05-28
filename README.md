@@ -190,8 +190,25 @@ assert seq([1, 2, 3]).map(lambda number: number * 2).value() == [2, 4, 6]
 Returns the result of the sequence being reduced to a singular value.
 
 ```python
-# Returns the int 21.
-seq([8, 6, 7]).reduce(lambda accumulator, value: accumulator + value)
+from snakefunc import seq
+
+assert seq([1, 2, 3]).reduce(lambda accumulator, value: accumulator + value) == 6
+```
+
+An optional `initial_value` argument can be provided to seed the accumulator.
+
+```python
+from snakefunc import seq
+
+assert seq([1, 2, 3]).reduce(lambda accumulator, value: accumulator + value, 5) == 11
+```
+
+The callback may also optionally include `index` and `sequence` arguments.
+
+```python
+from snakefunc import seq
+
+assert seq([1, 2, 3]).reduce(lambda accumulator, value, index, sequence: accumulator + value + index + len(sequence)) == 18
 ```
 
 ### `.to_bytes()`

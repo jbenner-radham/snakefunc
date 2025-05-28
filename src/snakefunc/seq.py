@@ -748,25 +748,8 @@ class seq[T]:
 
     @overload
     def reduce[TAccumulated](
-        self, callback: Callable[[TAccumulated, T], TAccumulated], /
-    ) -> TAccumulated: ...
-
-    @overload
-    def reduce[TAccumulated](
         self,
-        callback: Callable[[TAccumulated, T], TAccumulated],
-        initial_value: TAccumulated,
-    ) -> TAccumulated: ...
-
-    @overload
-    def reduce[TAccumulated](
-        self, callback: Callable[[TAccumulated, T, int], TAccumulated], /
-    ) -> TAccumulated: ...
-
-    @overload
-    def reduce[TAccumulated](
-        self,
-        callback: Callable[[TAccumulated, T, int], TAccumulated],
+        callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated],
         initial_value: TAccumulated,
     ) -> TAccumulated: ...
 
@@ -778,8 +761,25 @@ class seq[T]:
     @overload
     def reduce[TAccumulated](
         self,
-        callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated],
+        callback: Callable[[TAccumulated, T, int], TAccumulated],
         initial_value: TAccumulated,
+    ) -> TAccumulated: ...
+
+    @overload
+    def reduce[TAccumulated](
+        self, callback: Callable[[TAccumulated, T, int], TAccumulated], /
+    ) -> TAccumulated: ...
+
+    @overload
+    def reduce[TAccumulated](
+        self,
+        callback: Callable[[TAccumulated, T], TAccumulated],
+        initial_value: TAccumulated,
+    ) -> TAccumulated: ...
+
+    @overload
+    def reduce[TAccumulated](
+        self, callback: Callable[[TAccumulated, T], TAccumulated], /
     ) -> TAccumulated: ...
 
     def reduce[TAccumulated](
@@ -787,11 +787,31 @@ class seq[T]:
         callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated]
         | Callable[[TAccumulated, T, int], TAccumulated]
         | Callable[[TAccumulated, T], TAccumulated],
-        initial_value: TAccumulated = None,
+        initial_value: TAccumulated = ...,
     ) -> TAccumulated | None:
+        """
+        Returns the result of the sequence being reduced to a singular value.
+
+        >>> seq([1, 2, 3]).reduce(lambda accumulator, value: accumulator + value)
+        6
+
+        An optional `initial_value` argument can be provided to seed the accumulator.
+
+        >>> seq([1, 2, 3]).reduce(lambda accumulator, value: accumulator + value, 5)
+        11
+
+        The callback may also optionally include `index` and `sequence` arguments.
+
+        >>> seq([1, 2, 3]).reduce(lambda accumulator, value, index, sequence: accumulator + value + index + len(sequence))
+        18
+
+        :param callback: The reducer function. At minimum, it has `accumulator` and `value` arguments.
+        :param initial_value: The initial value for the accumulator. If not provided an attempt will be made to supply one.
+        :return: The accumulated value.
+        """
         accumulator: TAccumulated = initial_value
 
-        if accumulator is None and self.len() > 0:
+        if is_ellipsis(accumulator) and self.len() != 0:
             match self.first():
                 case bytearray():
                     accumulator = bytearray()
@@ -814,7 +834,7 @@ class seq[T]:
                 case _:
                     raise TypeError
 
-        for index, value in enumerate(self.value()):
+        for index, value in enumerate(self):
             args = [accumulator, value, index, self.value()]
             accumulator = self._build_callback_partial(callback, args, min_args_len=2)()
 
