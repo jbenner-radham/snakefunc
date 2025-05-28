@@ -666,6 +666,29 @@ class seq[T]:
 
         return self.value().index(item, start)
 
+    def join_into_str(self, separator: str | None = None) -> str:
+        """
+        Get the value of the sequence joined into a string.
+
+        >>> seq(["H", "e", "l", "l", "o", "!"]).join_into_str()
+        'Hello!'
+
+        Optionally, joined together with a separator.
+
+        >>> seq(("foo", "bar", "baz")).join_into_str(separator=", ")
+        'foo, bar, baz'
+
+        :param separator: If desired, a separator to join the sequence together with. Defaults to `None`.
+        :type separator: str | None
+        :return: Rhe sequence joined together as a `str`.
+        :rtype: str
+        """
+        return (
+            "".join(map(str, self))
+            if separator is None
+            else separator.join(map(str, self))
+        )
+
     def last(self) -> T | None:
         """
         Returns the last item in the sequence, or `None` if the sequence is empty.
@@ -809,34 +832,33 @@ class seq[T]:
         """
         Get the value of the sequence as bytes.
 
+        TODO: Consider returning the sequence as bytes as opposed to joining into a str and encoding into bytes.
+
         :return: A bytes representation of the sequence.
         :rtype: bytes
         """
-        return self.to_str().encode()
+        return self.join_into_str().encode()
 
     def to_list(self) -> list[T]:
         """
-        Get the value of the sequence as list.
+        Get the value of the sequence as a list.
 
         :return: A list representation of the sequence.
         :rtype: list[T]
         """
         return list(self.value())
 
-    def to_str(self, separator: str | None = None) -> str:
+    def to_str(self) -> str:
         """
-        Get the value of the sequence as a string. Optionally, joined together with a separator.
+        Get the value of the sequence as a string.
 
-        :param separator: If desired, a separator to join the sequence together with. Defaults to `None`.
-        :type separator: str | None
+        >>> seq([1, 2, 3]).to_str()
+        '[1, 2, 3]'
+
         :return: A string representation of the sequence.
-        :rtype: str
         """
-        return (
-            "".join(map(str, self.value()))
-            if separator is None
-            else separator.join(map(str, self.value()))
-        )
+
+        return str(self)
 
     def to_tuple(self) -> tuple[T, ...]:
         """

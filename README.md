@@ -137,6 +137,24 @@ assert seq(("foo", "bar", "foo", "foo")).index("foo", 1, 3) == 2
 
 Note that if the sequence is of the `range` type, then the `start` and `stop` arguments are not supported.
 
+### `.join_into_str()`
+
+Get the value of the sequence joined into a string. Optionally, joined together with a separator.
+
+```python
+from snakefunc import seq
+
+assert seq(["H", "e", "l", "l", "o", "!"]).join_into_str() == "Hello!"
+```
+
+Optionally, joined together with a separator.
+
+```python
+from snakefunc import seq
+
+assert seq(("foo", "bar", "baz")).join_into_str(separator=", ") == "foo, bar, baz"
+```
+
 ### `.last()`
 
 Returns the last item in the sequence, or `None` if the sequence is empty.
@@ -203,15 +221,7 @@ Get the value of the sequence as a string.
 ```python
 from snakefunc import seq
 
-assert seq([8, 6, 7, 5, 3, 0, 9]).to_str() == "8675309"
-```
-
-Optionally, joined together with a separator.
-
-```python
-from snakefunc import seq
-
-assert seq([85, 5, 14]).to_str(separator=".") == "85.5.14"
+assert seq([1, 2, 3]).to_str() == "[1, 2, 3]"
 ```
 
 ### `.to_tuple()`
