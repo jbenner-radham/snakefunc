@@ -1,3 +1,4 @@
+import json
 from collections.abc import Callable, Iterator, Sequence
 from functools import partial
 from types import FunctionType
@@ -680,7 +681,7 @@ class seq[T]:
 
         :param separator: If desired, a separator to join the sequence together with. Defaults to `None`.
         :type separator: str | None
-        :return: Rhe sequence joined together as a `str`.
+        :return: The sequence joined together as a `str`.
         :rtype: str
         """
         return (
@@ -847,6 +848,33 @@ class seq[T]:
         :rtype: list[T]
         """
         return list(self.value())
+
+    def to_json(self) -> str:
+        """
+        Get the value of the sequence as a JSON string.
+
+        >>> seq([{"foo": "bar"}, {"baz": "blue"}]).to_json()
+        '[{"foo": "bar"}, {"baz": "blue"}]'
+
+        Sequences which are of type `bytearray` or `range` are represented as arrays.
+
+        >>> seq(range(5)).to_json()
+        '[0, 1, 2, 3, 4]'
+
+        Lastly, `byte` sequences are represented as strings.
+
+        >>> seq(b"Hi!").to_json()
+        '"b\'Hi!\'"'
+
+        :return: A JSON representation of the sequence.
+        :rtype: str
+        """
+        if self._is_bytearray or self._is_range:
+            return json.dumps(self.to_tuple())
+        elif self._is_bytes:
+            return json.dumps(self.to_str())
+
+        return json.dumps(self.value())
 
     def to_str(self) -> str:
         """

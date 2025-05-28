@@ -204,6 +204,32 @@ from snakefunc import seq
 assert seq(["h", "e", "l", "l", "o", "!"]).to_bytes() == b"hello!"
 ```
 
+### `.to_json()`
+
+Get the value of the sequence as a JSON string.
+
+```python
+from snakefunc import seq
+
+assert seq([{"foo": "bar"}, {"baz": "blue"}]).to_json() == '[{"foo": "bar"}, {"baz": "blue"}]'
+```
+
+Sequences which are of type `bytearray` or `range` are represented as arrays.
+
+```python
+from snakefunc import seq
+
+assert seq(range(5)).to_json() == "[0, 1, 2, 3, 4]"
+```
+
+Lastly, `byte` sequences are represented as strings.
+
+```python
+from snakefunc import seq
+
+assert seq(b"Hi!").to_json() == "\"b'Hi!'\""
+```
+
 ### `.to_list()`
 
 Returns the sequence as a list.
