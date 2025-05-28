@@ -623,7 +623,7 @@ class seq[T]:
         :return: The first item in the sequence, or `None` if the sequence is empty.
         :rtype: T
         """
-        return self.value()[0] if self.len() > 0 else None
+        return self[0] if self.len() > 0 else None
 
     def index(self, item: T, start: int = 0, stop: int = ...) -> int:
         """
@@ -651,7 +651,7 @@ class seq[T]:
         """
         # Ranges don't support the `start` and `end` arguments even though they're
         # of the `Sequence` type. I'm confused, but here's a workaround regardless.
-        if self._sequence_type == "range" and start == 0 and is_ellipsis(stop):
+        if self._is_range and start == 0 and is_ellipsis(stop):
             return self.value().index(item)
 
         if isinstance(stop, int):
@@ -692,7 +692,7 @@ class seq[T]:
         :return: The last item in the sequence, or `None` if the sequence is empty.
         :rtype: T
         """
-        return self.value()[-1] if self.len() > 0 else None
+        return self[-1] if self.len() > 0 else None
 
     def len(self) -> int:
         """
