@@ -84,7 +84,7 @@ Find the duplicate items in the sequence.
 ```python
 from snakefunc import seq
 
-assert seq("Hello, world!").duplicates().to_tuple() == ("l", "o")
+assert seq((1, 2, 2, 3, 4, 4, 5)).duplicates().value() == (2, 4)
 ```
 
 ### `.filter()`
@@ -104,7 +104,7 @@ Iterate over the sequence and return the first item for which the predicate call
 ```python
 from snakefunc import seq
 
-assert seq([0, 1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0).value() == 2
+assert seq([0, 1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0) == 2
 ```
 
 ### `.first()`

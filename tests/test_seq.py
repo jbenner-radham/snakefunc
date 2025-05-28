@@ -6,7 +6,7 @@ from snakefunc import seq
 def test_add_dunder_method_with_a_range_and_a_list_of_strs() -> None:
     """
     Since ranges don't support addition and cannot be manipulated, we coerce
-    the range into value of the `coerce_range_into` argument which defaults to
+    the range into value of the `coerce_into` argument which defaults to
     `"tuple"`. The other sequence being added is then converted into a tuple
     as well to match the source. Hence, the result of the operation yields a
     tuple.

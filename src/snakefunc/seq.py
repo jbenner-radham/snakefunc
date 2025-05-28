@@ -2,8 +2,9 @@ import json
 from collections.abc import Callable, Iterator, Sequence
 from functools import partial
 from types import FunctionType
-from typing import Any, Literal, Self, cast, overload
+from typing import Any, Self, cast, overload
 
+from snakefunc.base_seq import BaseSeq
 from snakefunc.identity import (
     is_bytearray,
     is_bytes,
@@ -13,44 +14,10 @@ from snakefunc.identity import (
     is_str,
     is_tuple,
 )
-
-type RangeType = Literal["range"]
-type CoercibleSequenceType = Literal["bytearray", "bytes", "list", "str", "tuple"]
-type SequenceType = CoercibleSequenceType | RangeType
+from snakefunc.types import CoercibleSequenceType, SequenceType
 
 
-class seq[T]:
-    __slots__ = ("_coerce_range_into", "_value")
-
-    def __init__(
-        self, sequence: Sequence[T], coerce_range_into: CoercibleSequenceType = "tuple"
-    ) -> None:
-        coercible_sequence_types: tuple[CoercibleSequenceType, ...] = (
-            "bytearray",
-            "bytes",
-            "list",
-            "str",
-            "tuple",
-        )
-
-        if not isinstance(sequence, Sequence):
-            raise TypeError(
-                'The provided "sequence" argument must be of type "Sequence".'
-            )
-
-        if not isinstance(coerce_range_into, str):
-            raise TypeError(
-                'The provided "coerce_range_into" argument must be of type "str".'
-            )
-
-        if not coerce_range_into in coercible_sequence_types:
-            raise TypeError(
-                'The provided "coerce_range_into" argument must be of type "CoercibleSequenceType" which is a "str" with a value of "bytearray", "bytes", "list", "str", or "tuple".'
-            )
-
-        self._value: Sequence[T] = sequence
-        self._coerce_range_into: CoercibleSequenceType = coerce_range_into
-
+class seq[T](BaseSeq[T]):
     def __add__(self, other: Sequence[T]) -> "seq[T]":
         """
         Adds support for the addition operator. Which, when used with another sequence will return a combination of the
@@ -67,46 +34,44 @@ class seq[T]:
         if self._is_bytearray and is_bytearray(other):
             return seq(
                 cast(bytearray, self.value()) + cast(bytearray, other),
-                self._coerce_range_into,
+                self._coerce_into,
             )
 
         if self._is_bytes and is_bytes(other):
             return seq(
-                cast(bytes, self.value()) + cast(bytes, other), self._coerce_range_into
+                cast(bytes, self.value()) + cast(bytes, other), self._coerce_into
             )
 
         if self._is_list and is_list(other):
             return seq(
                 cast(list[T], self.value()) + cast(list[T], other),
-                self._coerce_range_into,
+                self._coerce_into,
             )
 
         if self._is_range and is_range(other):
             sequence_self = self._coerce_value(self.value())
             sequence_other = self._coerce_value(other)
 
-            return seq(sequence_self + sequence_other, self._coerce_range_into)
+            return seq(sequence_self + sequence_other, self._coerce_into)
 
         if self._is_str and is_str(other):
-            return seq(
-                cast(str, self.value()) + cast(str, other), self._coerce_range_into
-            )
+            return seq(cast(str, self.value()) + cast(str, other), self._coerce_into)
 
         if self._is_tuple and is_tuple(other):
             return seq(
-                cast(tuple, self.value()) + cast(tuple, other), self._coerce_range_into
+                cast(tuple, self.value()) + cast(tuple, other), self._coerce_into
             )
 
         sequence_type = cast(
             CoercibleSequenceType,
-            self._sequence_type if not self._is_range else self._coerce_range_into,
+            self._sequence_type if not self._is_range else self._coerce_into,
         )
         sequence_self = (
             self.value() if not self._is_range else self._coerce_value(self.value())
         )
         sequence_other = self._coerce_value(other, into_type=sequence_type)
 
-        return seq(sequence_self + sequence_other, self._coerce_range_into)
+        return seq(sequence_self + sequence_other, self._coerce_into)
 
     def __bool__(self) -> bool:
         """
@@ -123,20 +88,6 @@ class seq[T]:
     @classmethod
     def __call__(cls, *args, **kwargs) -> Self:
         return cls(*args, **kwargs)
-
-    def __contains__(self, item: T) -> bool:
-        """
-        Adds compatability for membership test operators.
-
-        >>> 5 in seq((1, 2, 3, 4, 5))
-        True
-
-        :param item: The item to check for in the sequence.
-        :type item: T
-        :return: `True` or `False` depending on if the item is in the sequence.
-        :rtype: bool
-        """
-        return self.value().__contains__(item)
 
     def __delitem__(self, index: int | slice) -> None:
         """
@@ -183,46 +134,6 @@ class seq[T]:
         """
         return self.value() == other
 
-    def __getitem__(self, item: int | slice) -> T:
-        """
-        Enables getting an item or items from the sequence using an index or slice.
-
-        >>> seq("Hi!")[-1]
-        !
-
-        >>> seq("Hi!")[1:]
-        i!
-
-        :param item: The index or slice of the desired item(s).
-        :type item: int | slice
-        :return: The requested item(s) of the sequence.
-        :rtype: T
-        """
-        return self.value()[item]
-
-    def __iter__(self) -> Iterator[T]:
-        """
-        Enables iterating over the sequence.
-
-        >>> for value in seq([1, 2, 3]): ...
-
-        :return: An iterator of the sequence.
-        :rtype: Iterator[T]
-        """
-        return iter(self.value())
-
-    def __len__(self) -> int:
-        """
-        Enables compatability with the `len()` function.
-
-        >>> len(seq("Hi!"))
-        3
-
-        :return: The length of the sequence.
-        :rtype: int
-        """
-        return self.len()
-
     def __ne__(self, other: Any) -> bool:
         """
         Adds compatability for inequality test operators.
@@ -265,44 +176,6 @@ class seq[T]:
 
         return str(self.value())
 
-    @staticmethod
-    def _build_callback_partial(
-        callback: Callable[..., Any], args: list[Any], min_args_len: int = 1
-    ) -> Callable[[], Any]:
-        callback_args: tuple[str, ...] = cast(
-            FunctionType, callback
-        ).__code__.co_varnames
-        callback_args_len = len(callback_args)
-        max_args_len = len(args)
-        exclusive_stop_index = max_args_len + 1
-
-        for index in range(min_args_len, exclusive_stop_index):
-            if index == callback_args_len:
-                return partial(callback, *args[:index])
-
-        raise TypeError(
-            f'The "callback" argument callable must have {min_args_len} to {max_args_len} arguments.'
-        )
-
-    def _coerce_value(
-        self, value: Sequence[T], into_type: CoercibleSequenceType | None = None
-    ) -> bytearray | bytes | list[T] | str | tuple[T, ...]:
-        coerce_into = self._coerce_range_into if into_type is None else into_type
-
-        match coerce_into:
-            case "bytearray":
-                return bytearray(value)
-            case "bytes":
-                return bytes(value)
-            case "list":
-                return list(value)
-            case "str":
-                return "".join(map(str, tuple(value)))
-            case "tuple":
-                return tuple(value)
-            case _:
-                raise TypeError(f'Cannot coerce into unsupported type "{coerce_into}".')
-
     @property
     def _is_bytearray(self) -> bool:
         return self._sequence_type == "bytearray"
@@ -330,24 +203,6 @@ class seq[T]:
     @property
     def _is_tuple(self) -> bool:
         return self._sequence_type == "tuple"
-
-    @property
-    def _sequence_type(self) -> SequenceType:
-        match self.value():
-            case bytearray():
-                return "bytearray"
-            case bytes():
-                return "bytes"
-            case list():
-                return "list"
-            case range():
-                return "range"
-            case str():
-                return "str"
-            case tuple():
-                return "tuple"
-            case _:
-                raise ValueError()
 
     def _transform_list_into_sequence_type(self, value: list[T]) -> Sequence[T]:
         match self._sequence_type:
@@ -390,18 +245,9 @@ class seq[T]:
         True
 
         :param callback: A callback predicate which has a value argument, and optionally index and sequence arguments.
-        :type callback: Callable[[T, int, Sequence[T]], bool] | Callable[[T, int], bool] | Callable[[T], bool]
         :return: `True` if all the items in the sequence match the callback predicate, `False` otherwise.
-        :rtype: bool
         """
-        for index, value in enumerate(self):
-            args = [value, index, self.value()]
-            fn = self._build_callback_partial(callback, args)
-
-            if not fn():
-                return False
-
-        return True
+        return super().all(callback)
 
     @overload
     def any(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
@@ -425,18 +271,9 @@ class seq[T]:
         True
 
         :param callback: A callback predicate which has a value argument, and optionally index and sequence arguments.
-        :type callback: Callable[[T, int, Sequence[T]], bool] | Callable[[T, int], bool] | Callable[[T], bool]
         :return: `True` if any item in the sequence matches the callback predicate, `False` otherwise.
-        :rtype: bool
         """
-        for index, value in enumerate(self):
-            args = [value, index, self.value()]
-            fn = self._build_callback_partial(callback, args)
-
-            if fn():
-                return True
-
-        return False
+        return super().any(callback)
 
     def clear(self) -> None:
         """
@@ -468,27 +305,15 @@ class seq[T]:
         >>> seq[bytes](b"123455555").count(b"5", 0, 5)
         1
 
-        If the `end` argument is specified, then the `start` argument must not be `None`.
-
         :param item: The item to be counted.
-        :type item: T
         :param start: The index to start the count from. Optional, defaults to `0`.
-        :type start: int
         :param end: The exclusive index to stop the count at. Optional, defaults to `...`.
-        :type end: int
         :return: The number of times `item` occurs in the sequence.
-        :rtype: int
         :raises TypeError: If `start` and/or `end` arguments are supplied for an incompatible sequence.
         """
         # TODO: Revisit the signature of this method. The `Sequence` interface only has the `item`
         #       argument. Should we strictly conform to that?
-        if not is_ellipsis(end):
-            return cast(bytearray | bytes | str, self.value()).count(item, start, end)
-
-        if start != 0 and is_ellipsis(end):
-            return cast(bytearray | bytes | str, self.value()).count(item, start)
-
-        return self.value().count(item)
+        return super().count(item, start, end)
 
     def deduplicate(self) -> Self:
         """
@@ -498,19 +323,8 @@ class seq[T]:
         (1, 2, 3, 4, 5)
 
         :return: The class instance for method chaining.
-        :rtype: Self
         """
-        counts: dict[str, int] = {}
-        unique_items: list[T] = []
-
-        for item in self:
-            key = str(item)
-            counts[key] = counts.get(key, 0) + 1
-
-            if counts.get(key) == 1:
-                unique_items.append(item)
-
-        self._value = self._transform_list_into_sequence_type(unique_items)
+        self._value = super().deduplicate()
 
         return self
 
@@ -518,20 +332,12 @@ class seq[T]:
         """
         Find the duplicate values in the sequence.
 
+        >>> seq((1, 2, 2, 3, 4, 4, 5)).duplicates().value()
+        (2, 4)
+
         :return: The class instance for method chaining.
-        :rtype: Self
         """
-        counts: dict[str, int] = {}
-        duplicates: list[T] = []
-
-        for index, value in enumerate(self):
-            key = str(value)
-            counts[key] = counts.get(key, 0) + 1
-
-            if counts.get(key) == 2:
-                duplicates.append(value)
-
-        self._value = self._transform_list_into_sequence_type(duplicates)
+        self._value = super().duplicates()
 
         return self
 
@@ -551,29 +357,15 @@ class seq[T]:
         | Callable[[T], bool],
     ) -> Self:
         """
-        Iterate over the sequence and retain the items for which the predicate callback returns `True`.
+        Iterate over the sequence and retain the items for which the predicate callback returns "truthy".
 
         >>> seq([1, 2, 3, 4, 5, 6]).filter(lambda number: number % 2 == 0).value()
         [2, 4, 6]
 
         :param callback: A predicate callback which has a `value` argument, and optionally `index` and `sequence` arguments.
-        :type callback: Callable[[T, int, Sequence[T]], bool] | Callable[[T, int], bool] | Callable[[T], bool]
         :return: The class instance for method chaining.
-        :rtype: Self
         """
-        if self.len() == 0:
-            return self
-
-        filtered: list[T] = []
-
-        for index, value in enumerate(self.value()):
-            args = [value, index, self.value()]
-            fn = self._build_callback_partial(callback, args)
-
-            if fn():
-                filtered.append(value)
-
-        self._value = self._transform_list_into_sequence_type(filtered)
+        self._value = super().filter(callback)
 
         return self
 
@@ -596,22 +388,13 @@ class seq[T]:
         Iterate over the sequence and return the first item for which the predicate callback returns `True`. Returns
         `None` if nothing is found.
 
-        >>> seq([0, 1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0).value()
+        >>> seq([0, 1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0)
         2
 
         :param callback: A predicate callback which has a `value` argument, and optionally `index` and `sequence` arguments.
-        :type callback: Callable[[T, int, Sequence[T]], bool] | Callable[[T, int], bool] | Callable[[T], bool]
         :return: The first item found, or `None` if nothing matches.
-        :rtype: T
         """
-        for index, value in enumerate(self):
-            args = [value, index, self.value()]
-            fn = self._build_callback_partial(callback, args)
-
-            if fn():
-                return value
-
-        return None
+        return super().find(callback)
 
     def first(self) -> T | None:
         """
@@ -621,9 +404,8 @@ class seq[T]:
         1
 
         :return: The first item in the sequence, or `None` if the sequence is empty.
-        :rtype: T
         """
-        return self[0] if self.len() > 0 else None
+        return super().first()
 
     def index(self, item: T, start: int = 0, stop: int = ...) -> int:
         """
@@ -672,15 +454,9 @@ class seq[T]:
         'foo, bar, baz'
 
         :param separator: If desired, a separator to join the sequence together with. Defaults to `None`.
-        :type separator: str | None
         :return: The sequence joined together as a `str`.
-        :rtype: str
         """
-        return (
-            "".join(map(str, self))
-            if separator is None
-            else separator.join(map(str, self))
-        )
+        return super().join_into_str(separator)
 
     def last(self) -> T | None:
         """
@@ -690,9 +466,8 @@ class seq[T]:
         5
 
         :return: The last item in the sequence, or `None` if the sequence is empty.
-        :rtype: T
         """
-        return self[-1] if self.len() > 0 else None
+        return super().last()
 
     def len(self) -> int:
         """
@@ -702,9 +477,8 @@ class seq[T]:
         5
 
         :return: The length of the sequence.
-        :rtype: int
         """
-        return len(self.value())
+        return super().len()
 
     @overload
     def map[TMapped](
@@ -947,7 +721,6 @@ class seq[T]:
         >>> seq([1, 2, 3]).value()
         [1, 2, 3]
 
-        :return: A sequence of values.
-        :rtype: Sequence[T]
+        :return: The underlying sequence.
         """
-        return self._value
+        return super().value()
