@@ -149,7 +149,6 @@ class seq[T]:
         :return: Nothing.
         :rtype: None
         """
-
         if self._is_mutable_type:
             del cast(bytearray | list, self.value())[index]
         elif self._is_range:
@@ -395,8 +394,7 @@ class seq[T]:
         :return: `True` if all the items in the sequence match the callback predicate, `False` otherwise.
         :rtype: bool
         """
-
-        for index, value in enumerate(self.value()):
+        for index, value in enumerate(self):
             args = [value, index, self.value()]
             fn = self._build_callback_partial(callback, args)
 
@@ -431,8 +429,7 @@ class seq[T]:
         :return: `True` if any item in the sequence matches the callback predicate, `False` otherwise.
         :rtype: bool
         """
-
-        for index, value in enumerate(self.value()):
+        for index, value in enumerate(self):
             args = [value, index, self.value()]
             fn = self._build_callback_partial(callback, args)
 
@@ -483,10 +480,8 @@ class seq[T]:
         :rtype: int
         :raises TypeError: If `start` and/or `end` arguments are supplied for an incompatible sequence.
         """
-
         # TODO: Revisit the signature of this method. The `Sequence` interface only has the `item`
         #       argument. Should we strictly conform to that?
-
         if not is_ellipsis(end):
             return cast(bytearray | bytes | str, self.value()).count(item, start, end)
 
@@ -508,7 +503,7 @@ class seq[T]:
         counts: dict[str, int] = {}
         unique_items: list[T] = []
 
-        for item in self.value():
+        for item in self:
             key = str(item)
             counts[key] = counts.get(key, 0) + 1
 
@@ -529,7 +524,7 @@ class seq[T]:
         counts: dict[str, int] = {}
         duplicates: list[T] = []
 
-        for index, value in enumerate(self.value()):
+        for index, value in enumerate(self):
             key = str(value)
             counts[key] = counts.get(key, 0) + 1
 
@@ -566,7 +561,6 @@ class seq[T]:
         :return: The class instance for method chaining.
         :rtype: Self
         """
-
         if self.len() == 0:
             return self
 
@@ -610,8 +604,7 @@ class seq[T]:
         :return: The first item found, or `None` if nothing matches.
         :rtype: T
         """
-
-        for index, value in enumerate(self.value()):
+        for index, value in enumerate(self):
             args = [value, index, self.value()]
             fn = self._build_callback_partial(callback, args)
 
@@ -656,7 +649,6 @@ class seq[T]:
         :return: The index of the desired item.
         :rtype: int
         """
-
         # Ranges don't support the `start` and `end` arguments even though they're
         # of the `Sequence` type. I'm confused, but here's a workaround regardless.
         if self._sequence_type == "range" and start == 0 and is_ellipsis(stop):
@@ -742,7 +734,6 @@ class seq[T]:
         :return: The class instance for method chaining.
         :rtype: Self
         """
-
         mapped: list[T] = []
 
         for index, value in enumerate(self.value()):
@@ -844,10 +835,13 @@ class seq[T]:
         """
         Get the value of the sequence as a list.
 
+        >>> seq("Hi!").to_list()
+        ['H', 'i', '!']
+
         :return: A list representation of the sequence.
         :rtype: list[T]
         """
-        return list(self.value())
+        return list(self)
 
     def to_json(self) -> str:
         """
@@ -892,6 +886,9 @@ class seq[T]:
         """
         Get the value of the sequence as a tuple.
 
+        >>> seq(range(3)).to_tuple()
+        (0, 1, 2)
+
         :return: A tuple representation of the sequence.
         :rtype: tuple[T, ...]
         """
@@ -926,6 +923,9 @@ class seq[T]:
     def value(self) -> Sequence[T]:
         """
         Get the value of the sequence.
+
+        >>> seq([1, 2, 3]).value()
+        [1, 2, 3]
 
         :return: A sequence of values.
         :rtype: Sequence[T]
