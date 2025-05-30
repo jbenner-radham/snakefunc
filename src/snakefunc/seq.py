@@ -193,10 +193,6 @@ class seq[T](BaseSeq[T]):
         return self._sequence_type == ("bytearray", "list")
 
     @property
-    def _is_range(self) -> bool:
-        return self._sequence_type == "range"
-
-    @property
     def _is_str(self) -> bool:
         return self._sequence_type == "str"
 
@@ -419,27 +415,12 @@ class seq[T](BaseSeq[T]):
         >>> seq(("foo", "bar", "foo", "foo")).index("foo", 1, 3)
         2
 
-        Note that if the sequence is of the `range` type, then the `start`
-        and `stop` arguments are not supported.
-
         :param item: The item to search for.
-        :type item: T
         :param start: The index to start the search from. Optional, defaults to `0`.
-        :type start: int
         :param stop: The exclusive index to stop the search at. Optional, defaults to `...`.
-        :type stop: int
         :return: The index of the desired item.
-        :rtype: int
         """
-        # Ranges don't support the `start` and `end` arguments even though they're
-        # of the `Sequence` type. I'm confused, but here's a workaround regardless.
-        if self._is_range and start == 0 and is_ellipsis(stop):
-            return self.value().index(item)
-
-        if isinstance(stop, int):
-            return self.value().index(item, start, stop)
-
-        return self.value().index(item, start)
+        return super().index(item, start, stop)
 
     def join_into_str(self, separator: str | None = None) -> str:
         """

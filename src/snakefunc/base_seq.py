@@ -93,6 +93,10 @@ class BaseSeq[T]:
             f'The "callback" argument callable must have {min_args_len} to {max_args_len} arguments.'
         )
 
+    @property
+    def _is_range(self) -> bool:
+        return self._sequence_type == "range"
+
     def _build_sequence_from_list(self, value: list[T]) -> Sequence[T]:
         match self._sequence_type:
             case "bytearray":
@@ -113,21 +117,24 @@ class BaseSeq[T]:
                 )
 
     def _coerce_value(
-        self, value: Sequence[T], into_type: CoercibleSequenceType | None = None
+        self,
+        value: Sequence[T] | None = None,
+        into_type: CoercibleSequenceType | None = None,
     ) -> bytearray | bytes | list[T] | str | tuple[T, ...]:
+        coerce_from = self.value() if value is None else value
         coerce_into = self._coerce_into if into_type is None else into_type
 
         match coerce_into:
             case "bytearray":
-                return bytearray(value)
+                return bytearray(coerce_from)
             case "bytes":
-                return bytes(value)
+                return bytes(coerce_from)
             case "list":
-                return list(value)
+                return list(coerce_from)
             case "str":
-                return "".join(map(str, tuple(value)))
+                return "".join(map(str, tuple(coerce_from)))
             case "tuple":
-                return tuple(value)
+                return tuple(coerce_from)
             case _:
                 raise TypeError(f'Cannot coerce into unsupported type "{coerce_into}".')
 
@@ -259,6 +266,18 @@ class BaseSeq[T]:
     @abstractmethod
     def first(self) -> T | None:
         return self[0] if self.len() != 0 else None
+
+    @abstractmethod
+    def index(self, item: T, start: int = 0, stop: int = ...) -> int:
+        # Ranges don't support the `start` and `end` arguments even though they're
+        # of the `Sequence` type. I'm confused, but here's a workaround regardless.
+        sequence = self.value() if not self._is_range else self._coerce_value()
+
+        return (
+            sequence.index(item, start, stop)
+            if isinstance(stop, int)
+            else sequence.index(item, start)
+        )
 
     @abstractmethod
     def join_into_str(self, separator: str | None = None) -> str:

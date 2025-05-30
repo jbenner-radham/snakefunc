@@ -168,6 +168,25 @@ class useq[T](BaseSeq[T]):
         """
         return super().first()
 
+    def index(self, item: T, start: int = 0, stop: int = ...) -> int:
+        """
+        Returns the index of the first occurrence of `item` in the sequence.
+
+        >>> useq("abc").index("c")
+        2
+
+        Optionally, `start` and `stop` arguments can also be provided.
+
+        >>> useq(("foo", "bar", "foo", "foo")).index("foo", 1, 3)
+        2
+
+        :param item: The item to search for.
+        :param start: The index to start the search from. Optional, defaults to `0`.
+        :param stop: The exclusive index to stop the search at. Optional, defaults to `...`.
+        :return: The index of the desired item.
+        """
+        return super().index(item, start, stop)
+
     def join_into_str(self, separator: str | None = None) -> str:
         """
         Get the value of the sequence joined into a string.
