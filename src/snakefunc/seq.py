@@ -631,7 +631,7 @@ class seq[T](BaseSeq[T]):
         Lastly, `byte` sequences are represented as strings.
 
         >>> seq(b"Hi!").to_json()
-        '"b\'Hi!\'"'
+        '"b\\'Hi!\\'"'
 
         :return: A JSON representation of the sequence.
         :rtype: str
