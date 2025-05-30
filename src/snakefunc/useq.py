@@ -126,9 +126,7 @@ class useq[T](BaseSeq[T]):
         :param callback: A predicate callback which has a `value` argument, and optionally `index` and `sequence` arguments.
         :return: The filtered sequence.
         """
-        self._value = super().filter(callback)
-
-        return self
+        return super().filter(callback)
 
     @overload
     def find(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...

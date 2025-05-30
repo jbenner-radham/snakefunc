@@ -18,3 +18,12 @@ repos:
       - id: end-of-file-fixer
       # Trims trailing whitespace.
       - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: python-doctest
+        name: python doctest
+        entry: python3 -m doctest
+        language: system
+        pass_filenames: true
+        require_serial: true
+        types: [python]
