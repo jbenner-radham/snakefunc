@@ -415,10 +415,18 @@ class seq[T](BaseSeq[T]):
         >>> seq(("foo", "bar", "foo", "foo")).index("foo", 1, 3)
         2
 
+        Raises a `ValueError` if the item is not in the sequence.
+
+        >>> seq([1, 2, 3]).index(5)
+        Traceback (most recent call last):
+            ...
+        ValueError: 5 is not in list
+
         :param item: The item to search for.
         :param start: The index to start the search from. Optional, defaults to `0`.
         :param stop: The exclusive index to stop the search at. Optional, defaults to `...`.
         :return: The index of the desired item.
+        :raises ValueError: If the item is not in the sequence.
         """
         return super().index(item, start, stop)
 
@@ -485,19 +493,9 @@ class seq[T](BaseSeq[T]):
         [2, 4, 6]
 
         :param callback: A mapper callback which has a `value` argument, and optionally `index` and `sequence` arguments.
-        :type callback: Callable[[T, int, Sequence[T]], bool] | Callable[[T, int], bool] | Callable[[T], bool]
         :return: The class instance for method chaining.
-        :rtype: Self
         """
-        mapped: list[T] = []
-
-        for index, value in enumerate(self.value()):
-            args = [value, index, self.value()]
-            fn = self._build_callback_partial(callback, args)
-
-            mapped.append(fn())
-
-        self._value = self._transform_list_into_sequence_type(mapped)
+        self._value = super().map(callback)
 
         return self
 

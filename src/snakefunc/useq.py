@@ -180,10 +180,18 @@ class useq[T](BaseSeq[T]):
         >>> useq(("foo", "bar", "foo", "foo")).index("foo", 1, 3)
         2
 
+        Raises a `ValueError` if the item is not in the sequence.
+
+        >>> useq([1, 2, 3]).index(5)
+        Traceback (most recent call last):
+            ...
+        ValueError: 5 is not in list
+
         :param item: The item to search for.
         :param start: The index to start the search from. Optional, defaults to `0`.
         :param stop: The exclusive index to stop the search at. Optional, defaults to `...`.
         :return: The index of the desired item.
+        :raises ValueError: If the item is not in the sequence.
         """
         return super().index(item, start, stop)
 
@@ -225,6 +233,36 @@ class useq[T](BaseSeq[T]):
         :return: The length of the sequence.
         """
         return super().len()
+
+    @overload
+    def map[TMapped](
+        self, callback: Callable[[T, int, Sequence[T]], TMapped]
+    ) -> Sequence[TMapped]: ...
+
+    @overload
+    def map[TMapped](
+        self, callback: Callable[[T, int], TMapped]
+    ) -> Sequence[TMapped]: ...
+
+    @overload
+    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Sequence[TMapped]: ...
+
+    def map[TMapped](
+        self,
+        callback: Callable[[T, int, Sequence[T]], TMapped]
+        | Callable[[T, int], TMapped]
+        | Callable[[T], TMapped],
+    ) -> Sequence[TMapped]:
+        """
+        Create a new sequence populated by the results of the callback applied to each item in the current sequence.
+
+        >>> useq([1, 2, 3]).map(lambda number: number * 2)
+        [2, 4, 6]
+
+        :param callback: A mapper callback which has a `value` argument, and optionally `index` and `sequence` arguments.
+        :return: The newly created sequence.
+        """
+        return super().map(callback)
 
     def value(self) -> Sequence[T]:
         """

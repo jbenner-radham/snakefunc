@@ -296,5 +296,22 @@ class BaseSeq[T]:
         return len(self)
 
     @abstractmethod
+    def map[TMapped](
+        self,
+        callback: Callable[[T, int, Sequence[T]], TMapped]
+        | Callable[[T, int], TMapped]
+        | Callable[[T], TMapped],
+    ) -> Self:
+        mapped: list[T] = []
+
+        for index, value in enumerate(self.value()):
+            args = [value, index, self.value()]
+            fn = self._build_callback_partial(callback, args)
+
+            mapped.append(fn())
+
+        return self._build_sequence_from_list(mapped)
+
+    @abstractmethod
     def value(self) -> Sequence[T]:
         return self._value
