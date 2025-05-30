@@ -149,7 +149,7 @@ class useq[T](BaseSeq[T]):
         Iterate over the sequence and return the first item for which the predicate callback returns `True`. Returns
         `None` if nothing is found.
 
-        >>> useq([0, 1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0)
+        >>> useq([1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0)
         2
 
         :param callback: A predicate callback which has a `value` argument, and optionally `index` and `sequence` arguments.
