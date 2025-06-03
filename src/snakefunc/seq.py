@@ -500,49 +500,49 @@ class seq[T](BaseSeq[T]):
 
         return self
 
-    @overload
-    def reduce[TAccumulated](
-        self,
-        callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated],
-        initial_value: TAccumulated,
-    ) -> TAccumulated: ...
+    # @overload
+    # def reduce[TAccumulated](
+    #     self,
+    #     callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated],
+    #     initial_value: TAccumulated | None = None,
+    # ) -> TAccumulated: ...
 
-    @overload
-    def reduce[TAccumulated](
-        self, callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated], /
-    ) -> TAccumulated: ...
+    # @overload
+    # def reduce[TAccumulated](
+    #     self, callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated]
+    # ) -> TAccumulated: ...
 
-    @overload
-    def reduce[TAccumulated](
-        self,
-        callback: Callable[[TAccumulated, T, int], TAccumulated],
-        initial_value: TAccumulated,
-    ) -> TAccumulated: ...
+    # @overload
+    # def reduce[TAccumulated](
+    #     self,
+    #     callback: Callable[[TAccumulated, T, int], TAccumulated],
+    #     initial_value: TAccumulated | None = None,
+    # ) -> TAccumulated: ...
 
-    @overload
-    def reduce[TAccumulated](
-        self, callback: Callable[[TAccumulated, T, int], TAccumulated], /
-    ) -> TAccumulated: ...
+    # @overload
+    # def reduce[TAccumulated](
+    #     self, callback: Callable[[TAccumulated, T, int], TAccumulated], /
+    # ) -> TAccumulated: ...
 
-    @overload
-    def reduce[TAccumulated](
-        self,
-        callback: Callable[[TAccumulated, T], TAccumulated],
-        initial_value: TAccumulated,
-    ) -> TAccumulated: ...
+    # @overload
+    # def reduce[TAccumulated](
+    #     self,
+    #     callback: Callable[[TAccumulated, T], TAccumulated],
+    #     initial_value: TAccumulated | None = None,
+    # ) -> TAccumulated: ...
 
-    @overload
-    def reduce[TAccumulated](
-        self, callback: Callable[[TAccumulated, T], TAccumulated], /
-    ) -> TAccumulated: ...
+    # @overload
+    # def reduce[TAccumulated](
+    #     self, callback: Callable[[TAccumulated, T], TAccumulated], /
+    # ) -> TAccumulated: ...
 
     def reduce[TAccumulated](
         self,
         callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated]
         | Callable[[TAccumulated, T, int], TAccumulated]
         | Callable[[TAccumulated, T], TAccumulated],
-        initial_value: TAccumulated = ...,
-    ) -> TAccumulated | None:
+        initial_value: TAccumulated | None = None,
+    ) -> TAccumulated:
         """
         Returns the result of the sequence being reduced to a singular value.
 
@@ -563,36 +563,7 @@ class seq[T](BaseSeq[T]):
         :param initial_value: The initial value for the accumulator. If not provided an attempt will be made to supply one.
         :return: The accumulated value.
         """
-        accumulator: TAccumulated = initial_value
-
-        if is_ellipsis(accumulator) and self.len() != 0:
-            match self.first():
-                case bytearray():
-                    accumulator = bytearray()
-                case bytes():
-                    accumulator = b""
-                case complex():
-                    accumulator = complex()
-                case dict():
-                    accumulator = {}
-                case float():
-                    accumulator = 0.0
-                case frozenset():
-                    accumulator = frozenset()
-                case int():
-                    accumulator = 0
-                case set():
-                    accumulator = set()
-                case str():
-                    accumulator = ""
-                case _:
-                    raise TypeError
-
-        for index, value in enumerate(self):
-            args = [accumulator, value, index, self.value()]
-            accumulator = self._build_callback_partial(callback, args, min_args_len=2)()
-
-        return accumulator
+        return super().reduce(callback, initial_value)
 
     def to_bytes(self) -> bytes:
         """

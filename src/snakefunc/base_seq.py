@@ -312,6 +312,71 @@ class BaseSeq[T]:
 
         return self._build_sequence_from_list(mapped)
 
+    @overload
+    @abstractmethod
+    def reduce[TAccumulated](
+        self,
+        callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated],
+        initial_value: TAccumulated | None = None,
+    ) -> TAccumulated: ...
+
+    @overload
+    @abstractmethod
+    def reduce[TAccumulated](
+        self,
+        callback: Callable[[TAccumulated, T, int], TAccumulated],
+        initial_value: TAccumulated | None = None,
+    ) -> TAccumulated: ...
+
+    @overload
+    @abstractmethod
+    def reduce[TAccumulated](
+        self,
+        callback: Callable[[TAccumulated, T], TAccumulated],
+        initial_value: TAccumulated | None = None,
+    ) -> TAccumulated: ...
+
+    @abstractmethod
+    def reduce[TAccumulated](
+        self,
+        callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated]
+        | Callable[[TAccumulated, T, int], TAccumulated]
+        | Callable[[TAccumulated, T], TAccumulated],
+        initial_value: TAccumulated | None = None,
+    ) -> TAccumulated:
+        accumulator: TAccumulated = initial_value
+
+        if accumulator is None and self.len() != 0:
+            match self.first():
+                case bytearray():
+                    accumulator = bytearray()
+                case bytes():
+                    accumulator = b""
+                case complex():
+                    accumulator = complex()
+                case dict():
+                    accumulator = {}
+                case float():
+                    accumulator = 0.0
+                case frozenset():
+                    accumulator = frozenset()
+                case int():
+                    accumulator = 0
+                case set():
+                    accumulator = set()
+                case str():
+                    accumulator = ""
+                case _:
+                    raise TypeError(
+                        'Cannot auto-create an initial value based on the sequence type. Please provide an "initial_value" argument.'
+                    )
+
+        for index, value in enumerate(self):
+            args = [accumulator, value, index, self.value()]
+            accumulator = self._build_callback_partial(callback, args, min_args_len=2)()
+
+        return accumulator
+
     @abstractmethod
     def value(self) -> Sequence[T]:
         return self._value

@@ -262,6 +262,35 @@ class useq[T](BaseSeq[T]):
         """
         return super().map(callback)
 
+    def reduce[TAccumulated](
+        self,
+        callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated]
+        | Callable[[TAccumulated, T, int], TAccumulated]
+        | Callable[[TAccumulated, T], TAccumulated],
+        initial_value: TAccumulated | None = None,
+    ) -> TAccumulated:
+        """
+        Returns the result of the sequence being reduced to a singular value.
+
+        >>> useq([1, 2, 3]).reduce(lambda accumulator, value: accumulator + value)
+        6
+
+        An optional `initial_value` argument can be provided to seed the accumulator.
+
+        >>> useq([1, 2, 3]).reduce(lambda accumulator, value: accumulator + value, 5)
+        11
+
+        The callback may also optionally include `index` and `sequence` arguments.
+
+        >>> useq([1, 2, 3]).reduce(lambda accumulator, value, index, sequence: accumulator + value + index + len(sequence))
+        18
+
+        :param callback: The reducer function. At minimum, it has `accumulator` and `value` arguments.
+        :param initial_value: The initial value for the accumulator. If not provided an attempt will be made to supply one.
+        :return: The accumulated value.
+        """
+        return super().reduce(callback, initial_value)
+
     def value(self) -> Sequence[T]:
         """
         Get the value of the sequence.
