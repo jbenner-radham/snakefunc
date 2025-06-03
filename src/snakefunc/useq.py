@@ -31,15 +31,6 @@ class useq[T](BaseSeq[T]):
         """
         return super().all(callback)
 
-    @overload
-    def any(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
-
-    @overload
-    def any(self, callback: Callable[[T, int], bool]) -> Self: ...
-
-    @overload
-    def any(self, callback: Callable[[T], bool]) -> Self: ...
-
     def any(
         self,
         callback: Callable[[T, int, Sequence[T]], bool]

@@ -246,15 +246,6 @@ class seq[T](BaseSeq[T]):
         """
         return super().all(callback)
 
-    @overload
-    def any(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
-
-    @overload
-    def any(self, callback: Callable[[T, int], bool]) -> Self: ...
-
-    @overload
-    def any(self, callback: Callable[[T], bool]) -> Self: ...
-
     def any(
         self,
         callback: Callable[[T, int, Sequence[T]], bool]
@@ -638,7 +629,7 @@ class seq[T](BaseSeq[T]):
 
             if counts.get(key) == 1:
                 unique_items.append(item)
-            elif counts.get(key) > 1:
+            elif cast(int, counts.get(key)) > 1:
                 unique_items.remove(item)
 
         self._value = self._transform_list_into_sequence_type(unique_items)

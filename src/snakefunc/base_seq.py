@@ -172,6 +172,18 @@ class BaseSeq[T]:
 
         return True
 
+    @overload
+    @abstractmethod
+    def any(self, callback: Callable[[T, int, Sequence[T]], bool]) -> bool: ...
+
+    @overload
+    @abstractmethod
+    def any(self, callback: Callable[[T, int], bool]) -> bool: ...
+
+    @overload
+    @abstractmethod
+    def any(self, callback: Callable[[T], bool]) -> bool: ...
+
     @abstractmethod
     def any(
         self,
@@ -311,15 +323,15 @@ class BaseSeq[T]:
     @abstractmethod
     def map[TMapped](
         self, callback: Callable[[T, int, Sequence[T]], TMapped]
-    ) -> Self: ...
+    ) -> Sequence[T]: ...
 
     @overload
     @abstractmethod
-    def map[TMapped](self, callback: Callable[[T, int], TMapped]) -> Self: ...
+    def map[TMapped](self, callback: Callable[[T, int], TMapped]) -> Sequence[T]: ...
 
     @overload
     @abstractmethod
-    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Self: ...
+    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Sequence[T]: ...
 
     @abstractmethod
     def map[TMapped](
@@ -327,7 +339,7 @@ class BaseSeq[T]:
         callback: Callable[[T, int, Sequence[T]], TMapped]
         | Callable[[T, int], TMapped]
         | Callable[[T], TMapped],
-    ) -> Self:
+    ) -> Sequence[T]:
         mapped: list[T] = []
 
         for index, value in enumerate(self.value()):
