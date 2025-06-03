@@ -128,15 +128,6 @@ class useq[T](BaseSeq[T]):
         """
         return super().filter(callback)
 
-    @overload
-    def find(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
-
-    @overload
-    def find(self, callback: Callable[[T, int], bool]) -> Self: ...
-
-    @overload
-    def find(self, callback: Callable[[T], bool]) -> Self: ...
-
     def find(
         self,
         callback: Callable[[T, int, Sequence[T]], bool]
@@ -231,19 +222,6 @@ class useq[T](BaseSeq[T]):
         :return: The length of the sequence.
         """
         return super().len()
-
-    @overload
-    def map[TMapped](
-        self, callback: Callable[[T, int, Sequence[T]], TMapped]
-    ) -> Sequence[TMapped]: ...
-
-    @overload
-    def map[TMapped](
-        self, callback: Callable[[T, int], TMapped]
-    ) -> Sequence[TMapped]: ...
-
-    @overload
-    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Sequence[TMapped]: ...
 
     def map[TMapped](
         self,

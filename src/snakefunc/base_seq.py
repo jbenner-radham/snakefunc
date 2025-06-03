@@ -247,6 +247,18 @@ class BaseSeq[T]:
 
         return self._build_sequence_from_list(filtered)
 
+    @overload
+    @abstractmethod
+    def find(self, callback: Callable[[T, int, Sequence[T]], bool]) -> T | None: ...
+
+    @overload
+    @abstractmethod
+    def find(self, callback: Callable[[T, int], bool]) -> T | None: ...
+
+    @overload
+    @abstractmethod
+    def find(self, callback: Callable[[T], bool]) -> T | None: ...
+
     @abstractmethod
     def find(
         self,
@@ -294,6 +306,20 @@ class BaseSeq[T]:
     @abstractmethod
     def len(self) -> int:
         return len(self)
+
+    @overload
+    @abstractmethod
+    def map[TMapped](
+        self, callback: Callable[[T, int, Sequence[T]], TMapped]
+    ) -> Self: ...
+
+    @overload
+    @abstractmethod
+    def map[TMapped](self, callback: Callable[[T, int], TMapped]) -> Self: ...
+
+    @overload
+    @abstractmethod
+    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Self: ...
 
     @abstractmethod
     def map[TMapped](
