@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterator, Sequence
 from functools import partial
 from types import FunctionType
-from typing import Any, Self, cast, overload
+from typing import Any, cast, overload
 
 from snakefunc.identity import is_ellipsis
 from snakefunc.types import CoercibleSequenceType, SequenceType
@@ -93,10 +93,6 @@ class BaseSeq[T]:
             f'The "callback" argument callable must have {min_args_len} to {max_args_len} arguments.'
         )
 
-    @property
-    def _is_range(self) -> bool:
-        return self._sequence_type == "range"
-
     def _build_sequence_from_list(self, value: list[T]) -> Sequence[T]:
         match self._sequence_type:
             case "bytearray":
@@ -138,6 +134,43 @@ class BaseSeq[T]:
             case _:
                 raise TypeError(f'Cannot coerce into unsupported type "{coerce_into}".')
 
+    def _filter(
+        self,
+        callback: Callable[[T, int, Sequence[T]], bool]
+        | Callable[[T, int], bool]
+        | Callable[[T], bool],
+    ) -> Sequence[T]:
+        filtered: list[T] = []
+
+        for index, value in enumerate(self):
+            args = [value, index, self.value()]
+            fn = self._build_callback_partial(callback, args)
+
+            if fn():
+                filtered.append(value)
+
+        return self._build_sequence_from_list(filtered)
+
+    @property
+    def _is_range(self) -> bool:
+        return self._sequence_type == "range"
+
+    def _map[TMapped](
+        self,
+        callback: Callable[[T, int, Sequence[T]], TMapped]
+        | Callable[[T, int], TMapped]
+        | Callable[[T], TMapped],
+    ) -> Sequence[T]:
+        mapped: list[T] = []
+
+        for index, value in enumerate(self):
+            args = [value, index, self.value()]
+            fn = self._build_callback_partial(callback, args)
+
+            mapped.append(fn())
+
+        return self._build_sequence_from_list(mapped)
+
     @property
     def _sequence_type(self) -> SequenceType:
         match self.value():
@@ -155,6 +188,18 @@ class BaseSeq[T]:
                 return "tuple"
             case _:
                 raise ValueError()
+
+    @overload
+    @abstractmethod
+    def all(self, callback: Callable[[T, int, Sequence[T]], bool]) -> bool: ...
+
+    @overload
+    @abstractmethod
+    def all(self, callback: Callable[[T, int], bool]) -> bool: ...
+
+    @overload
+    @abstractmethod
+    def all(self, callback: Callable[[T], bool]) -> bool: ...
 
     @abstractmethod
     def all(
@@ -241,24 +286,6 @@ class BaseSeq[T]:
 
         return self._build_sequence_from_list(duplicates)
 
-    @abstractmethod
-    def filter(
-        self,
-        callback: Callable[[T, int, Sequence[T]], bool]
-        | Callable[[T, int], bool]
-        | Callable[[T], bool],
-    ) -> Sequence[T]:
-        filtered: list[T] = []
-
-        for index, value in enumerate(self):
-            args = [value, index, self.value()]
-            fn = self._build_callback_partial(callback, args)
-
-            if fn():
-                filtered.append(value)
-
-        return self._build_sequence_from_list(filtered)
-
     @overload
     @abstractmethod
     def find(self, callback: Callable[[T, int, Sequence[T]], bool]) -> T | None: ...
@@ -318,37 +345,6 @@ class BaseSeq[T]:
     @abstractmethod
     def len(self) -> int:
         return len(self)
-
-    @overload
-    @abstractmethod
-    def map[TMapped](
-        self, callback: Callable[[T, int, Sequence[T]], TMapped]
-    ) -> Sequence[T]: ...
-
-    @overload
-    @abstractmethod
-    def map[TMapped](self, callback: Callable[[T, int], TMapped]) -> Sequence[T]: ...
-
-    @overload
-    @abstractmethod
-    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Sequence[T]: ...
-
-    @abstractmethod
-    def map[TMapped](
-        self,
-        callback: Callable[[T, int, Sequence[T]], TMapped]
-        | Callable[[T, int], TMapped]
-        | Callable[[T], TMapped],
-    ) -> Sequence[T]:
-        mapped: list[T] = []
-
-        for index, value in enumerate(self.value()):
-            args = [value, index, self.value()]
-            fn = self._build_callback_partial(callback, args)
-
-            mapped.append(fn())
-
-        return self._build_sequence_from_list(mapped)
 
     @overload
     @abstractmethod

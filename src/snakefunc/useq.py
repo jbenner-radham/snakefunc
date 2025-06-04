@@ -6,13 +6,13 @@ from snakefunc.base_seq import BaseSeq
 
 class useq[T](BaseSeq[T]):
     @overload
-    def all(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
+    def all(self, callback: Callable[[T, int, Sequence[T]], bool]) -> bool: ...
 
     @overload
-    def all(self, callback: Callable[[T, int], bool]) -> Self: ...
+    def all(self, callback: Callable[[T, int], bool]) -> bool: ...
 
     @overload
-    def all(self, callback: Callable[[T], bool]) -> Self: ...
+    def all(self, callback: Callable[[T], bool]) -> bool: ...
 
     def all(
         self,
@@ -117,7 +117,7 @@ class useq[T](BaseSeq[T]):
         :param callback: A predicate callback which has a `value` argument, and optionally `index` and `sequence` arguments.
         :return: The filtered sequence.
         """
-        return super().filter(callback)
+        return self._filter(callback)
 
     def find(
         self,
@@ -214,6 +214,17 @@ class useq[T](BaseSeq[T]):
         """
         return super().len()
 
+    @overload
+    def map[TMapped](
+        self, callback: Callable[[T, int, Sequence[T]], TMapped]
+    ) -> Sequence[T]: ...
+
+    @overload
+    def map[TMapped](self, callback: Callable[[T, int], TMapped]) -> Sequence[T]: ...
+
+    @overload
+    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Sequence[T]: ...
+
     def map[TMapped](
         self,
         callback: Callable[[T, int, Sequence[T]], TMapped]
@@ -229,7 +240,7 @@ class useq[T](BaseSeq[T]):
         :param callback: A mapper callback which has a `value` argument, and optionally `index` and `sequence` arguments.
         :return: The newly created sequence.
         """
-        return super().map(callback)
+        return self._map(callback)
 
     def reduce[TAccumulated](
         self,

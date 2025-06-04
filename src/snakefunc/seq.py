@@ -221,13 +221,13 @@ class seq[T](BaseSeq[T]):
                 )
 
     @overload
-    def all(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...
+    def all(self, callback: Callable[[T, int, Sequence[T]], bool]) -> bool: ...
 
     @overload
-    def all(self, callback: Callable[[T, int], bool]) -> Self: ...
+    def all(self, callback: Callable[[T, int], bool]) -> bool: ...
 
     @overload
-    def all(self, callback: Callable[[T], bool]) -> Self: ...
+    def all(self, callback: Callable[[T], bool]) -> bool: ...
 
     def all(
         self,
@@ -353,7 +353,7 @@ class seq[T](BaseSeq[T]):
         :param callback: A predicate callback which has a `value` argument, and optionally `index` and `sequence` arguments.
         :return: The class instance for method chaining.
         """
-        self._value = super().filter(callback)
+        self._value = self._filter(callback)
 
         return self
 
@@ -452,6 +452,17 @@ class seq[T](BaseSeq[T]):
         """
         return super().len()
 
+    @overload
+    def map[TMapped](
+        self, callback: Callable[[T, int, Sequence[T]], TMapped]
+    ) -> Self: ...
+
+    @overload
+    def map[TMapped](self, callback: Callable[[T, int], TMapped]) -> Self: ...
+
+    @overload
+    def map[TMapped](self, callback: Callable[[T], TMapped]) -> Self: ...
+
     def map[TMapped](
         self,
         callback: Callable[[T, int, Sequence[T]], TMapped]
@@ -467,7 +478,7 @@ class seq[T](BaseSeq[T]):
         :param callback: A mapper callback which has a `value` argument, and optionally `index` and `sequence` arguments.
         :return: The class instance for method chaining.
         """
-        self._value = super().map(callback)
+        self._value = self._map(callback)
 
         return self
 
