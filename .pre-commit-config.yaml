@@ -20,6 +20,7 @@ repos:
       - id: trailing-whitespace
   - repo: local
     hooks:
+      # Test the code in docstrings.
       - id: python-doctest
         name: python doctest
         entry: python3 -m doctest
@@ -27,3 +28,11 @@ repos:
         pass_filenames: true
         require_serial: true
         types: [python]
+      # Execute Python fenced code blocks in Markdown files.
+      - id: fencechecker
+        name: fencechecker
+        entry: fencechecker
+        language: system
+        pass_filenames: true
+        types: [markdown]
+        args: [--only-report-errors]

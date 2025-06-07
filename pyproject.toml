@@ -7,7 +7,6 @@ authors = [
     { name = "James Benner", email = "james.benner@gmail.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
 
 [build-system]
 requires = ["hatchling"]
@@ -16,7 +15,11 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "expects>=0.9.0",
+    "fencechecker@git+https://github.com/jbenner-radham/fencechecker.git@main",
     "pre-commit>=4.2.0",
     "pytest>=8.3.5",
     "ruff>=0.11.9",
 ]
+
+#[tool.hatch.metadata]
+#allow-direct-references = true

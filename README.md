@@ -104,7 +104,7 @@ Iterate over the sequence and return the first item for which the predicate call
 ```python
 from snakefunc import seq
 
-assert seq([0, 1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0) == 2
+assert seq([1, 2, 3, 4, 5, 6]).find(lambda number: number % 2 == 0) == 2
 ```
 
 ### `.first()`
