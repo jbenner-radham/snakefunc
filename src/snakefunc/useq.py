@@ -91,7 +91,7 @@ class useq[T](BaseSeq[T]):
 
         :return: The duplicate values in the sequence.
         """
-        return super().duplicates()
+        return self._duplicates()
 
     @overload
     def filter(self, callback: Callable[[T, int, Sequence[T]], bool]) -> Self: ...

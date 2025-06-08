@@ -325,7 +325,7 @@ class seq[T](BaseSeq[T]):
 
         :return: The class instance for method chaining.
         """
-        self._value = super().duplicates()
+        self._value = self._duplicates()
 
         return self
 
