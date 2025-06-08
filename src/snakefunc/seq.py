@@ -482,41 +482,26 @@ class seq[T](BaseSeq[T]):
 
         return self
 
-    # @overload
-    # def reduce[TAccumulated](
-    #     self,
-    #     callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated],
-    #     initial_value: TAccumulated | None = None,
-    # ) -> TAccumulated: ...
+    @overload
+    def reduce[TAccumulated](
+        self,
+        callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated],
+        initial_value: TAccumulated | None = None,
+    ) -> TAccumulated: ...
 
-    # @overload
-    # def reduce[TAccumulated](
-    #     self, callback: Callable[[TAccumulated, T, int, Sequence[T]], TAccumulated]
-    # ) -> TAccumulated: ...
+    @overload
+    def reduce[TAccumulated](
+        self,
+        callback: Callable[[TAccumulated, T, int], TAccumulated],
+        initial_value: TAccumulated | None = None,
+    ) -> TAccumulated: ...
 
-    # @overload
-    # def reduce[TAccumulated](
-    #     self,
-    #     callback: Callable[[TAccumulated, T, int], TAccumulated],
-    #     initial_value: TAccumulated | None = None,
-    # ) -> TAccumulated: ...
-
-    # @overload
-    # def reduce[TAccumulated](
-    #     self, callback: Callable[[TAccumulated, T, int], TAccumulated], /
-    # ) -> TAccumulated: ...
-
-    # @overload
-    # def reduce[TAccumulated](
-    #     self,
-    #     callback: Callable[[TAccumulated, T], TAccumulated],
-    #     initial_value: TAccumulated | None = None,
-    # ) -> TAccumulated: ...
-
-    # @overload
-    # def reduce[TAccumulated](
-    #     self, callback: Callable[[TAccumulated, T], TAccumulated], /
-    # ) -> TAccumulated: ...
+    @overload
+    def reduce[TAccumulated](
+        self,
+        callback: Callable[[TAccumulated, T], TAccumulated],
+        initial_value: TAccumulated | None = None,
+    ) -> TAccumulated: ...
 
     def reduce[TAccumulated](
         self,
