@@ -80,7 +80,7 @@ class useq[T](BaseSeq[T]):
 
         :return: The deduplicated sequence.
         """
-        return super().deduplicate()
+        return self._deduplicate()
 
     def duplicates(self) -> Sequence[T]:
         """

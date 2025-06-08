@@ -134,6 +134,19 @@ class BaseSeq[T]:
             case _:
                 raise TypeError(f'Cannot coerce into unsupported type "{coerce_into}".')
 
+    def _deduplicate(self) -> Sequence[T]:
+        counts: dict[str, int] = {}
+        unique_items: list[T] = []
+
+        for item in self:
+            key = str(item)
+            counts[key] = counts.get(key, 0) + 1
+
+            if counts.get(key) == 1:
+                unique_items.append(item)
+
+        return self._build_sequence_from_list(unique_items)
+
     def _duplicates(self) -> Sequence[T]:
         counts: dict[str, int] = {}
         duplicates: list[T] = []
@@ -270,20 +283,6 @@ class BaseSeq[T]:
             return cast(bytearray | bytes | str, self.value()).count(item, start)
 
         return self.value().count(item)
-
-    @abstractmethod
-    def deduplicate(self) -> Sequence[T]:
-        counts: dict[str, int] = {}
-        unique_items: list[T] = []
-
-        for item in self:
-            key = str(item)
-            counts[key] = counts.get(key, 0) + 1
-
-            if counts.get(key) == 1:
-                unique_items.append(item)
-
-        return self._build_sequence_from_list(unique_items)
 
     @overload
     @abstractmethod
