@@ -177,49 +177,6 @@ class seq[T](BaseSeq[T]):
 
         return str(self.value())
 
-    @property
-    def _is_bytearray(self) -> bool:
-        return self._sequence_type == "bytearray"
-
-    @property
-    def _is_bytes(self) -> bool:
-        return self._sequence_type == "bytes"
-
-    @property
-    def _is_list(self) -> bool:
-        return self._sequence_type == "list"
-
-    @property
-    def _is_mutable_type(self) -> bool:
-        return self._sequence_type == ("bytearray", "list")
-
-    @property
-    def _is_str(self) -> bool:
-        return self._sequence_type == "str"
-
-    @property
-    def _is_tuple(self) -> bool:
-        return self._sequence_type == "tuple"
-
-    def _transform_list_into_sequence_type(self, value: list[T]) -> Sequence[T]:
-        match self._sequence_type:
-            case "bytearray":
-                return bytearray(value)
-            case "bytes":
-                return bytes(value)
-            case "list":
-                return value
-            case "range":
-                return self._coerce_value(value)
-            case "str":
-                return "".join(map(str, value))
-            case "tuple":
-                return tuple(value)
-            case _:
-                raise TypeError(
-                    f'Cannot transform list. Non-sequence type of "{self._sequence_type}" specified.'
-                )
-
     @overload
     def all(self, callback: Callable[[T, int, Sequence[T]], bool]) -> bool: ...
 
@@ -628,7 +585,7 @@ class seq[T](BaseSeq[T]):
             elif cast(int, counts.get(key)) > 1:
                 unique_items.remove(item)
 
-        self._value = self._transform_list_into_sequence_type(unique_items)
+        self._value = self._build_sequence_from_list(unique_items)
 
         return self
 

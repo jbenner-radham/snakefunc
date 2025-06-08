@@ -49,7 +49,7 @@ class BaseSeq[T]:
         """
         return self.value().__contains__(item)
 
-    def __getitem__(self, item: int | slice) -> T:
+    def __getitem__(self, item: int | slice) -> T | Sequence[T]:
         """
         Enables getting an item or items from the sequence using an index or slice.
 
@@ -104,7 +104,7 @@ class BaseSeq[T]:
             case "range":
                 return self._coerce_value(value)
             case "str":
-                return "".join(value)
+                return "".join(map(str, value))
             case "tuple":
                 return tuple(value)
             case _:
@@ -178,8 +178,32 @@ class BaseSeq[T]:
         return self._build_sequence_from_list(filtered)
 
     @property
+    def _is_bytearray(self) -> bool:
+        return self._sequence_type == "bytearray"
+
+    @property
+    def _is_bytes(self) -> bool:
+        return self._sequence_type == "bytes"
+
+    @property
+    def _is_list(self) -> bool:
+        return self._sequence_type == "list"
+
+    @property
+    def _is_mutable_type(self) -> bool:
+        return self._sequence_type == ("bytearray", "list")
+
+    @property
     def _is_range(self) -> bool:
         return self._sequence_type == "range"
+
+    @property
+    def _is_str(self) -> bool:
+        return self._sequence_type == "str"
+
+    @property
+    def _is_tuple(self) -> bool:
+        return self._sequence_type == "tuple"
 
     def _map[TMapped](
         self,
