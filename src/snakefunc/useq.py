@@ -48,7 +48,7 @@ class useq[T](BaseSeq[T]):
         """
         return super().any(callback)
 
-    def count(self, item: T, start: int = 0, end: int = ...) -> int:
+    def count(self, item: T, start: int = 0, end: int | None = None) -> int:
         """
         Get the number of times `item` occurs in the sequence.
 

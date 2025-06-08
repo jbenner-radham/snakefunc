@@ -5,7 +5,7 @@ from types import FunctionType
 from typing import Any, cast, overload
 
 from snakefunc.identity import is_ellipsis
-from snakefunc.types import CoercibleSequenceType, SequenceType
+from snakefunc.models import CoercibleSequenceType, SequenceType
 
 
 class BaseSeq[T]:
@@ -272,14 +272,14 @@ class BaseSeq[T]:
         return False
 
     @abstractmethod
-    def count(self, item: T, start: int = 0, end: int = ...) -> int:
+    def count(self, item: T, start: int = 0, end: int | None = None) -> int:
         # TODO: Revisit the signature of this method. The `Sequence` interface only has the `item`
         #       argument. Should we strictly conform to that?
 
-        if not is_ellipsis(end):
+        if not end is None:
             return cast(bytearray | bytes | str, self.value()).count(item, start, end)
 
-        if start != 0 and is_ellipsis(end):
+        if start != 0 and end is None:
             return cast(bytearray | bytes | str, self.value()).count(item, start)
 
         return self.value().count(item)

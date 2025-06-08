@@ -14,7 +14,7 @@ from snakefunc.identity import (
     is_str,
     is_tuple,
 )
-from snakefunc.types import CoercibleSequenceType, SequenceType
+from snakefunc.models import CoercibleSequenceType, SequenceType
 
 
 class seq[T](BaseSeq[T]):
@@ -212,7 +212,7 @@ class seq[T](BaseSeq[T]):
             case "range":
                 return self._coerce_value(value)
             case "str":
-                return "".join(value)
+                return "".join(map(str, value))
             case "tuple":
                 return tuple(value)
             case _:
@@ -280,7 +280,7 @@ class seq[T](BaseSeq[T]):
         """
         del self[:]
 
-    def count(self, item: T, start: int = 0, end: int = ...) -> int:
+    def count(self, item: T, start: int = 0, end: int | None = None) -> int:
         """
         Get the number of times `item` occurs in the sequence.
 
@@ -295,9 +295,9 @@ class seq[T](BaseSeq[T]):
 
         :param item: The item to be counted.
         :param start: The index to start the count from. Optional, defaults to `0`.
-        :param end: The exclusive index to stop the count at. Optional, defaults to `...`.
+        :param end: The exclusive index to stop the count at. Optional, defaults to `None`.
         :return: The number of times `item` occurs in the sequence.
-        :raises TypeError: If `start` and/or `end` arguments are supplied for an incompatible sequence.
+        :raise TypeError: If `start` and/or `end` arguments are supplied for an incompatible sequence.
         """
         # TODO: Revisit the signature of this method. The `Sequence` interface only has the `item`
         #       argument. Should we strictly conform to that?
