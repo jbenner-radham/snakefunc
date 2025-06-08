@@ -16,6 +16,7 @@ build-backend = "hatchling.build"
 dev = [
     "expects>=0.9.0",
     "fencechecker@git+https://github.com/jbenner-radham/fencechecker.git@main",
+    "mypy>=1.16.0",
     "pre-commit>=4.2.0",
     "pytest>=8.3.5",
     "ruff>=0.11.9",
