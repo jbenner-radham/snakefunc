@@ -319,7 +319,7 @@ class BaseSeq[T]:
         return self[0] if self.len() != 0 else None
 
     @abstractmethod
-    def index(self, item: T, start: int = 0, stop: int = ...) -> int:
+    def index(self, item: T, start: int = 0, stop: int | None = None) -> int:
         # Ranges don't support the `start` and `end` arguments even though they're
         # of the `Sequence` type. I'm confused, but here's a workaround regardless.
         sequence = self.value() if not self._is_range else self._coerce_value()

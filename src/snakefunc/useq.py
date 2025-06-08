@@ -148,9 +148,9 @@ class useq[T](BaseSeq[T]):
         """
         return super().first()
 
-    def index(self, item: T, start: int = 0, stop: int = ...) -> int:
+    def index(self, item: T, start: int = 0, stop: int | None = None) -> int:
         """
-        Returns the index of the first occurrence of `item` in the sequence.
+        Return the index of the first occurrence of `item` in the sequence.
 
         >>> useq("abc").index("c")
         2
@@ -169,9 +169,9 @@ class useq[T](BaseSeq[T]):
 
         :param item: The item to search for.
         :param start: The index to start the search from. Optional, defaults to `0`.
-        :param stop: The exclusive index to stop the search at. Optional, defaults to `...`.
+        :param stop: The exclusive index to stop the search at. Optional, defaults to `None`.
         :return: The index of the desired item.
-        :raises ValueError: If the item is not in the sequence.
+        :raise ValueError: If the item is not in the sequence.
         """
         return super().index(item, start, stop)
 
